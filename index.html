@@ -16,7 +16,7 @@
 body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2d5a27;--acd:rgba(45,90,39,.06);--acm:rgba(45,90,39,.18);--red:#c0392b;--blue:#2563eb;--green:#16653a;--orange:#b45309;--purple:#6d28d9;--tx:#1a1a1a;--dim:#6b6560;--fnt:#b0a89e}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;overflow:hidden;background:var(--bg)}body{font-family:'Manrope',sans-serif;color:var(--tx);display:flex;flex-direction:column}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--fnt);border-radius:2px}
-.hdr{padding:14px 20px 12px 20px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;border-bottom:1px solid var(--bd)}.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--ac)}.hdr-s{font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:1px}.hdr-a{display:flex;gap:10px}.hdr-b{width:40px;height:40px;border-radius:10px;background:var(--acd);border:1.5px solid var(--acm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:background .15s,border-color .15s}.hdr-b:active{background:var(--s3);border-color:var(--ac)}
+.hdr{padding:14px 20px 12px 20px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd)}.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--ac)}.hdr-s{font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:1px}.hdr-a{display:flex;gap:10px}.hdr-b{width:40px;height:40px;border-radius:10px;background:var(--acd);border:1.5px solid var(--acm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:background .15s,border-color .15s}.hdr-b:active{background:var(--s3);border-color:var(--ac)}
 .tabs{display:flex;background:var(--s1);border-top:1px solid var(--bd);flex-shrink:0;padding-bottom:var(--sb);z-index:20}.tb{flex:1;padding:6px 1px calc(3px+var(--sb));text-align:center;cursor:pointer;position:relative}.tb-i{font-size:16px;display:block;margin-bottom:1px}.tb-l{font-size:7px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--dim)}.tb.on .tb-l{color:var(--ac)}.tb.on::after{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:var(--ac);border-radius:0 0 2px 2px}
 .ct{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:var(--st)}.pg{display:none;padding:0 0 20px}.pg.on{display:block;animation:fi .2s}@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
 .sec{padding:0 20px;margin-bottom:16px}.st{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}.cd{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:10px}.ct2{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:10px}
@@ -746,7 +746,7 @@ function confirmReset(){localStorage.clear();location.reload();}
 function cancelReset(){document.getElementById('resetMd').classList.add('hid');}
 
 function rSe(){const totalSes=Object.values(dy).reduce((tot,d)=>{if(!d.checks)return tot;return tot+Object.keys(d.checks).filter(k=>k.startsWith('ses_')&&d.checks[k]).length;},0);const sesEl=document.getElementById('sesCount');if(sesEl)sesEl.textContent=totalSes;const l=document.getElementById('sLst');if(!ses.length){l.innerHTML='<div class="empty" style="padding:30px"><div style="font-size:40px;margin-bottom:8px">🏋️</div><p style="font-size:13px;color:var(--fnt)">Aucune séance créée.<br>Crée ta première séance !</p></div>';return;}
-l.innerHTML=ses.map(s=>`<div class="sc"><div class="sch"><div class="scc" style="background:${s.color}"></div><div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><div class="scn">${s.name}</div>${s.badge?`<span style="padding:1px 6px;border-radius:12px;background:${s.badgeColor||'var(--dim)'}20;color:${s.badgeColor||'var(--dim)'};font-size:7px;font-weight:800;letter-spacing:1px">${s.badge}</span>`:''}</div><div class="sci">${s.focus||'—'}${s.exercises.length?' · '+s.exercises.length+' exos':''}${s.duration?' · '+s.duration+'min':''}${s.kcalEst?' · ~'+s.kcalEst+'kcal':''}</div></div><div class="sca"><div class="scb" onclick="openCS('${s.id}')" title="Modifier">✏️</div><div class="scb" onclick="delSes('${s.id}',event)" title="Supprimer">🗑</div></div></div>${s.exercises.length?`<div class="sel">${s.exercises.map((e,i)=>`<div class="se" style="flex-wrap:wrap"><span class="sen">${i+1}</span><span style="flex:1">${e.name}</span><span style="font-size:10px;color:var(--dim);white-space:nowrap">${e.sets}×${e.reps} · ${e.rest}</span>${e.note?`<div style="width:100%;font-size:9px;color:var(--ac);margin-top:2px;padding-left:28px;font-style:italic">${e.note}</div>`:''}</div>`).join('')}</div>`:''}</div>`).join('');}
+l.innerHTML=ses.map(s=>`<div class="sc"><div class="sch"><div class="scc" style="background:${s.color}"></div><div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><div class="scn">${s.name}</div>${s.badge?`<span style="padding:1px 6px;border-radius:12px;background:${s.badgeColor||'var(--dim)'}20;color:${s.badgeColor||'var(--dim)'};font-size:7px;font-weight:800;letter-spacing:1px">${s.badge}</span>`:''}</div><div class="sci">${s.focus||'—'}${s.exercises.length?' · '+s.exercises.length+' exos':''}${s.duration?' · '+s.duration+'min':''}${s.kcalEst?' · ~'+s.kcalEst+'kcal':''}</div></div><div class="sca"><div class="scb" onclick="shareSes('${s.id}')" title="Partager">📤</div><div class="scb" onclick="openCS('${s.id}')" title="Modifier">✏️</div><div class="scb" onclick="delSes('${s.id}',event)" title="Supprimer">🗑</div></div></div>${s.exercises.length?`<div class="sel">${s.exercises.map((e,i)=>`<div class="se" style="flex-wrap:wrap"><span class="sen">${i+1}</span><span style="flex:1">${e.name}</span><span style="font-size:10px;color:var(--dim);white-space:nowrap">${e.sets}×${e.reps} · ${e.rest}</span>${e.note?`<div style="width:100%;font-size:9px;color:var(--ac);margin-top:2px;padding-left:28px;font-style:italic">${e.note}</div>`:''}</div>`).join('')}</div>`:''}</div>`).join('');}
 
 let delTarget=null;
 function delSes(id,ev){if(ev)ev.stopPropagation();delTarget=id;const s=ses.find(x=>x.id===id);document.getElementById('delName').textContent=s?s.name:'cette séance';document.getElementById('delMd').classList.remove('hid');}
@@ -869,6 +869,56 @@ function clearCal(){
   }
   L.s('cal',cal);rCa();rH();
   toast(removed?removed+' jours vidés':'Calendrier déjà vide','info',2000);
+}
+
+function shareSes(id){
+  const s=ses.find(x=>x.id===id);
+  if(!s)return;
+  const data={_dimSes:true,name:s.name,focus:s.focus,color:s.color,exercises:s.exercises,duration:s.duration,kcalEst:s.kcalEst,badge:s.badge,badgeColor:s.badgeColor,techniques:s.techniques,coachTip:s.coachTip};
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const url=location.href.split('?')[0]+'?ses='+encodeURIComponent(encoded);
+  
+  if(navigator.share){
+    navigator.share({title:'DIMITAR — '+s.name,text:'Séance : '+s.name+' ('+s.focus+')',url:url})
+      .then(()=>toast('Séance partagée !','success'))
+      .catch(()=>{});
+  }else if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url)
+      .then(()=>toast('Lien copié ! Envoie-le à ton ami','success',3000))
+      .catch(()=>toast('Impossible de copier','warn'));
+  }else{
+    toast('Copie le lien manuellement','info');
+  }
+}
+
+function checkSharedSes(){
+  const p=new URLSearchParams(location.search).get('ses');
+  if(!p)return;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(p)))));
+    if(!data._dimSes||!data.name)return;
+    // Show import toast with action
+    const el=document.createElement('div');
+    el.className='toast toast-info';
+    el.style.animationDuration='0s';
+    el.style.pointerEvents='auto';
+    el.innerHTML='<span class="toast-icon">💪</span><div class="toast-msg"><b>'+data.name+'</b><br><span style="font-size:11px">'+data.focus+'</span></div><div style="display:flex;gap:6px;flex-shrink:0"><span style="padding:6px 12px;background:var(--ac);color:var(--bg);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer" onclick="importSharedSes()">Ajouter</span><span style="padding:6px 8px;cursor:pointer;font-size:14px" onclick="this.parentElement.parentElement.remove()">✕</span></div>';
+    document.getElementById('toastContainer').appendChild(el);
+    window._pendingSharedSes=data;
+    history.replaceState({},'',location.pathname);
+  }catch(e){}
+}
+
+function importSharedSes(){
+  const data=window._pendingSharedSes;
+  if(!data)return;
+  const newId='s_'+Date.now()+'_shared';
+  ses.push({id:newId,name:data.name,focus:data.focus,color:data.color,exercises:data.exercises||[],duration:data.duration||60,kcalEst:data.kcalEst||350,badge:data.badge,badgeColor:data.badgeColor,techniques:data.techniques,coachTip:data.coachTip});
+  L.s('ses',ses);
+  window._pendingSharedSes=null;
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  toast('Séance "'+data.name+'" ajoutée !','success');
+  rSe();
 }
 function oCaM(ds){caD=ds;const d=new Date(ds+'T12:00:00');document.getElementById('caMT').textContent=DF[d.getDay()]+' '+d.getDate()+' '+MF[d.getMonth()];
 const curSes=gCalSes(ds);
@@ -1241,17 +1291,33 @@ document.getElementById('nM').innerHTML=nt.meals.map((m,mi)=>{
   const mP=m.items.reduce((s,i)=>s+(i.eaten!==false?i.prot||0:0),0);
   const mC=m.items.reduce((s,i)=>s+(i.eaten!==false?i.carbs||0:0),0);
   const mF=m.items.reduce((s,i)=>s+(i.eaten!==false?i.fat||0:0),0);
-  return`<div class="mc"><div class="mch"><div style="display:flex;align-items:center;gap:8px">${miniRing}<div><div class="mcn">${m.name}</div><div style="font-size:9px;color:var(--dim)">${mKcal} / ${mBgt} kcal</div>${m.items.length?`<div style="display:flex;gap:6px;font-size:8px;margin-top:2px"><span style="color:var(--blue)">P${mP}g</span><span style="color:var(--green)">G${mC}g</span><span style="color:var(--ac)">L${mF}g</span></div>`:''}</div></div>${m.items.length?'<div style="padding:4px 8px;border-radius:6px;background:var(--acd);border:1px solid var(--acm);cursor:pointer;font-size:10px;font-weight:600;color:var(--ac);white-space:nowrap" onclick="event.stopPropagation();saveMealPreset('+mi+')">💾 Sauver</div>':''}</div><div class="mci">${m.items.length?m.items.map((it,ii)=>`<div class="mi" style="${it.eaten===false?'opacity:.4':''}"><div class="mic ${it.eaten!==false?'ck':''}" onclick="tNI(${mi},${ii})">${it.eaten!==false?'✓':''}</div><span style="font-size:16px;margin-right:4px">${it.emoji||'🍽'}</span><span class="min" style="cursor:pointer" onclick="editPortion(${mi},${ii})">${it.name}${it.grams?' <span style="color:var(--dim);font-weight:400">'+it.grams+'g</span>':''}</span><span style="display:flex;gap:4px;align-items:center;font-size:9px;flex-shrink:0"><span style="color:var(--blue)">P${it.prot||0}</span><span style="color:var(--green)">G${it.carbs||0}</span><span style="color:var(--ac)">L${it.fat||0}</span><span class="mik" style="margin-left:2px;color:var(--orange)">${it.kcal||0}kcal</span></span><div style="width:24px;height:24px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);color:var(--red);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" onclick="rNI(${mi},${ii})">×</div></div>`).join(''):'<div style="padding:12px 0;font-size:12px;color:var(--fnt);text-align:center">Aucun aliment ajouté</div>'}</div><div id="editBox_${mi}" style="display:none"></div></div>`;
+  return`<div class="mc"><div class="mch" style="cursor:pointer" onclick="toggleMeal(${mi})"><div style="display:flex;align-items:center;gap:8px">${miniRing}<div><div class="mcn">${m.name}</div><div style="font-size:9px;color:var(--dim)">${mKcal} / ${mBgt} kcal</div>${m.items.length?`<div style="display:flex;gap:6px;font-size:8px;margin-top:2px"><span style="color:var(--blue)">P${mP}g</span><span style="color:var(--green)">G${mC}g</span><span style="color:var(--ac)">L${mF}g</span></div>`:''}</div></div><div style="display:flex;align-items:center;gap:6px">${m.items.length?'<div style="padding:4px 8px;border-radius:6px;background:var(--acd);border:1px solid var(--acm);cursor:pointer;font-size:10px;font-weight:600;color:var(--ac);white-space:nowrap" onclick="event.stopPropagation();saveMealPreset('+mi+')">💾</div>':''}<span style="font-size:14px;color:var(--dim);transition:transform .2s" id="mealChev_${mi}">▾</span></div></div><div class="mci" id="mealBody_${mi}" style="display:none">${m.items.length?m.items.map((it,ii)=>`<div class="mi" style="${it.eaten===false?'opacity:.4':''}"><div class="mic ${it.eaten!==false?'ck':''}" onclick="tNI(${mi},${ii})">${it.eaten!==false?'✓':''}</div><span style="font-size:16px;margin-right:4px">${it.emoji||'🍽'}</span><span class="min" style="cursor:pointer" onclick="editPortion(${mi},${ii})">${it.name}${it.grams?' <span style="color:var(--dim);font-weight:400">'+it.grams+'g</span>':''}</span><span style="display:flex;gap:4px;align-items:center;font-size:9px;flex-shrink:0"><span style="color:var(--blue)">P${it.prot||0}</span><span style="color:var(--green)">G${it.carbs||0}</span><span style="color:var(--ac)">L${it.fat||0}</span><span class="mik" style="margin-left:2px;color:var(--orange)">${it.kcal||0}kcal</span></span><div style="width:24px;height:24px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);color:var(--red);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" onclick="rNI(${mi},${ii})">×</div></div>`).join(''):'<div style="padding:12px 0;font-size:12px;color:var(--fnt);text-align:center">Aucun aliment ajouté</div>'}</div><div id="editBox_${mi}" style="display:none"></div></div>`;
 }).join('');
 const _prevMi=document.getElementById('nMS').value;
 document.getElementById('nMS').innerHTML=nt.meals.map((m,i)=>`<option value="${i}">${m.name}</option>`).join('');
 if(_prevMi!==null&&_prevMi!=='')document.getElementById('nMS').value=_prevMi;
+// Restore open meal panels
+_openMeals.forEach(mi=>{
+  const body=document.getElementById('mealBody_'+mi);
+  const chev=document.getElementById('mealChev_'+mi);
+  if(body)body.style.display='block';
+  if(chev)chev.style.transform='rotate(180deg)';
+});
 // Favorites
 const fs=document.getElementById('favSec');
 if(favFoods.length){fs.style.display='block';document.getElementById('favList').innerHTML=favFoods.map((f,i)=>`<div style="display:inline-flex;align-items:center;gap:4px;padding:6px 10px;margin:0 4px 4px 0;background:var(--s2);border:1px solid var(--bd);border-radius:20px;font-size:12px;cursor:pointer" onclick="addFav(${i})"><span style="font-size:14px">${f.emoji||'🍽'}</span> ${f.name} <span style="color:var(--dim)">${f.kcal}kcal</span><span style="color:var(--red);margin-left:4px;font-size:10px" onclick="event.stopPropagation();rmFav(${i})">×</span></div>`).join('');}
 else{fs.style.display='none';}
 renderRecents();
 renderMealPresets();
+}
+
+let _openMeals=new Set();
+function toggleMeal(mi){
+  if(_openMeals.has(mi)){_openMeals.delete(mi);}else{_openMeals.add(mi);}
+  const body=document.getElementById('mealBody_'+mi);
+  const chev=document.getElementById('mealChev_'+mi);
+  if(body){body.style.display=_openMeals.has(mi)?'block':'none';}
+  if(chev){chev.style.transform=_openMeals.has(mi)?'rotate(180deg)':'';}
 }
 
 function tNI(mi,ii){gNu().meals[mi].items[ii].eaten=gNu().meals[mi].items[ii].eaten===false;L.s('nL',nL);rNu();}
@@ -2178,11 +2244,8 @@ function saveMealPreset(mi) {
   
   _pendingPresetMi = mi;
   
-  // Generate a default name
-  const itemNames = meal.items.slice(0, 3).map(i => i.emoji || '').join('') + ' ' + meal.items.slice(0, 2).map(i => i.name).join(' + ');
-  const defaultName = itemNames.length > 40 ? itemNames.slice(0, 40) + '…' : itemNames;
-  
-  document.getElementById('presetNameInp').value = defaultName;
+  document.getElementById('presetNameInp').value = '';
+  document.getElementById('presetNameInp').placeholder = meal.name + ' — ex: Mon petit-déj classique';
   
   // Show preview
   const totalK = meal.items.reduce((s, i) => s + (i.kcal || 0), 0);
@@ -2344,7 +2407,7 @@ function shP() {
   }
 }
 
-iTh();chIm();initApp();window.addEventListener('resize',()=>{if(wE.length>1)drCh();});
+iTh();chIm();initApp();checkSharedSes();window.addEventListener('resize',()=>{if(wE.length>1)drCh();});
 </script>
 </body>
 </html>
