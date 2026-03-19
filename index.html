@@ -325,6 +325,28 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="ma"><button class="btn bo" onclick="document.getElementById('presetMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmSavePreset()">💾 Enregistrer</button></div>
 </div></div>
 
+<div class="md hid" id="editFavMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
+<div class="mt">✏️ Modifier le favori</div>
+<div class="lb">Nom</div>
+<input class="inp" id="efName" style="margin-bottom:8px">
+<div class="g2" style="margin-bottom:8px">
+  <div><div class="lb">Kcal</div><input class="inp" type="number" id="efKcal"></div>
+  <div><div class="lb">Protéines (g)</div><input class="inp" type="number" id="efProt"></div>
+</div>
+<div class="g2" style="margin-bottom:12px">
+  <div><div class="lb">Glucides (g)</div><input class="inp" type="number" id="efCarbs"></div>
+  <div><div class="lb">Lipides (g)</div><input class="inp" type="number" id="efFat"></div>
+</div>
+<div class="ma"><button class="btn bo" onclick="document.getElementById('editFavMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmEditFav()">✅ Enregistrer</button></div>
+</div></div>
+
+<div class="md hid" id="editPresetMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
+<div class="mt">✏️ Renommer le repas</div>
+<div class="lb">Nom</div>
+<input class="inp" id="epNameInp" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')confirmEditPreset()">
+<div class="ma"><button class="btn bo" onclick="document.getElementById('editPresetMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmEditPreset()">✅ Enregistrer</button></div>
+</div></div>
+
 <div class="md hid" id="csMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
 <div class="mt">💪 Séance</div>
 <div class="lb">Nom</div>
@@ -1717,15 +1739,34 @@ rNu();
 
 function addFav(i){const f=favFoods[i];const mi=parseInt(document.getElementById('nMS').value)||0;gNu().meals[mi].items.push({...f,eaten:true});L.s('nL',nL);rNu();}
 function rmFav(i){favFoods.splice(i,1);L.s('fav',favFoods);rNu();}
+let _editFavIdx=null;
 function editFav(i){
   const f=favFoods[i];if(!f)return;
-  const name=prompt('Nom:',f.name);if(!name)return;
-  const kcal=parseInt(prompt('Kcal:',f.kcal))||f.kcal;
-  const prot=parseInt(prompt('Protéines (g):',f.prot||0));
-  const carbs=parseInt(prompt('Glucides (g):',f.carbs||0));
-  const fat=parseInt(prompt('Lipides (g):',f.fat||0));
-  favFoods[i]={...f,name:name.trim(),kcal,prot,carbs,fat};
-  L.s('fav',favFoods);rNu();toast('Favori modifié','success',2000);
+  _editFavIdx=i;
+  document.getElementById('efName').value=f.name||'';
+  document.getElementById('efKcal').value=f.kcal||0;
+  document.getElementById('efProt').value=f.prot||0;
+  document.getElementById('efCarbs').value=f.carbs||0;
+  document.getElementById('efFat').value=f.fat||0;
+  document.getElementById('editFavMd').classList.remove('hid');
+  setTimeout(()=>document.getElementById('efName').focus(),200);
+}
+function confirmEditFav(){
+  if(_editFavIdx===null)return;
+  const f=favFoods[_editFavIdx];if(!f)return;
+  const name=document.getElementById('efName').value.trim();
+  if(!name)return toast('Nom requis','warn');
+  favFoods[_editFavIdx]={...f,
+    name,
+    kcal:parseInt(document.getElementById('efKcal').value)||0,
+    prot:parseInt(document.getElementById('efProt').value)||0,
+    carbs:parseInt(document.getElementById('efCarbs').value)||0,
+    fat:parseInt(document.getElementById('efFat').value)||0
+  };
+  L.s('fav',favFoods);
+  document.getElementById('editFavMd').classList.add('hid');
+  _editFavIdx=null;
+  rNu();toast('Favori modifié','success',2000);
 }
 
 function rPl(){if(!obj){document.getElementById('plH').innerHTML='<div style="font-size:13px;color:var(--dim)">Aucun objectif.</div>';document.getElementById('plWk').innerHTML='';return;}
@@ -2579,15 +2620,25 @@ function deleteMealPreset(idx) {
   toast('Repas supprimé', 'info', 2000);
 }
 
+let _editPresetIdx=null;
 function editPresetName(idx) {
   const p = mealPresets[idx];
   if (!p) return;
-  const name = prompt('Nouveau nom:', p.name);
-  if (!name || !name.trim()) return;
-  mealPresets[idx].name = name.trim();
-  L.s('mealPresets', mealPresets);
+  _editPresetIdx=idx;
+  document.getElementById('epNameInp').value=p.name;
+  document.getElementById('editPresetMd').classList.remove('hid');
+  setTimeout(()=>document.getElementById('epNameInp').focus(),200);
+}
+function confirmEditPreset(){
+  if(_editPresetIdx===null)return;
+  const name=document.getElementById('epNameInp').value.trim();
+  if(!name)return toast('Nom requis','warn');
+  mealPresets[_editPresetIdx].name=name;
+  L.s('mealPresets',mealPresets);
+  document.getElementById('editPresetMd').classList.add('hid');
+  _editPresetIdx=null;
   renderMealPresets();
-  toast('Repas renommé', 'success', 2000);
+  toast('Repas renommé','success',2000);
 }
 
 function renderMealPresets() {
