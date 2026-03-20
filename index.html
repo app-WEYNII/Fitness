@@ -179,6 +179,7 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px">💧 Eau</div>
     <div id="homeWaterRing" style="position:relative;width:80px;height:80px"></div>
     <div style="margin-top:6px"><span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--blue)" id="homeWaterCur">0</span><span style="font-size:9px;color:var(--dim)" id="homeWaterGoal"> / 3.0L</span></div>
+    <div id="homeWaterGlasses" style="font-size:10px;color:var(--dim);margin-top:3px"></div>
     <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;justify-content:center">
       <div style="padding:4px 8px;border-radius:16px;background:rgba(91,168,255,.1);border:1px solid rgba(91,168,255,.25);cursor:pointer;font-size:10px;font-weight:600;color:var(--blue)" onclick="addWater(200)">🥛</div>
       <div style="padding:4px 8px;border-radius:16px;background:rgba(91,168,255,.1);border:1px solid rgba(91,168,255,.25);cursor:pointer;font-size:10px;font-weight:600;color:var(--blue)" onclick="addWater(500)">+500</div>
@@ -238,14 +239,6 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
   <div id="mealPresetsDetail"></div>
 </div>
 <div class="sec" id="favSec" style="display:none"><div class="st">⭐ Favoris</div><div id="favList"></div></div>
-<div class="sec"><div class="cd" style="border-color:rgba(91,168,255,.2)">
-  <div class="ct2">🔍 Rechercher un aliment</div>
-  <div style="display:flex;gap:6px;margin-bottom:8px">
-    <input class="inp" id="offQ" placeholder="Ex: poulet rôti, riz basmati…" style="flex:1" onkeydown="if(event.key==='Enter')offSearch()">
-    <button class="btn ba bs" onclick="offSearch()" style="flex-shrink:0;padding:10px 16px">🔍</button>
-  </div>
-  <div id="offRes" style="max-height:250px;overflow-y:auto"></div>
-</div></div>
 <div class="sec"><div class="cd">
   <div class="ct2">🍽 Ajouter un aliment</div>
   <div class="lb">Repas</div>
@@ -283,6 +276,14 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
       <button class="btn bo" onclick="aNI()">+ Ajouter manuellement</button>
     </div>
   </div>
+</div></div>
+<div class="sec"><div class="cd" style="border-color:rgba(91,168,255,.2)">
+  <div style="display:flex;justify-content:space-between;align-items:center"><div class="ct2">🔍 Rechercher (OpenFoodFacts)</div><div id="offClose" style="display:none;cursor:pointer;font-size:12px;color:var(--dim);padding:4px 8px" onclick="document.getElementById('offRes').innerHTML='';document.getElementById('offQ').value='';this.style.display='none'">✕ Fermer</div></div>
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input class="inp" id="offQ" placeholder="Ex: poulet rôti, riz basmati…" style="flex:1" onkeydown="if(event.key==='Enter')offSearch()">
+    <button class="btn ba bs" onclick="offSearch()" style="flex-shrink:0;padding:10px 16px">🔍</button>
+  </div>
+  <div id="offRes" style="max-height:250px;overflow-y:auto"></div>
 </div></div>
 <div class="sec" id="recentFoodsSection" style="display:none"><div class="st">🕐 Récemment utilisés</div><div id="recentFoodsList"></div></div>
 </div>
@@ -340,11 +341,19 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="ma"><button class="btn bo" onclick="document.getElementById('editFavMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmEditFav()">✅ Enregistrer</button></div>
 </div></div>
 
-<div class="md hid" id="editPresetMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
-<div class="mt">✏️ Renommer le repas</div>
+<div class="md hid" id="editPresetMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms" style="max-height:80vh;overflow-y:auto">
+<div class="mt">✏️ Modifier le repas</div>
 <div class="lb">Nom</div>
-<input class="inp" id="epNameInp" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')confirmEditPreset()">
+<input class="inp" id="epNameInp" style="margin-bottom:12px">
+<div class="lb">Aliments</div>
+<div id="epItemsList" style="margin-bottom:12px"></div>
 <div class="ma"><button class="btn bo" onclick="document.getElementById('editPresetMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmEditPreset()">✅ Enregistrer</button></div>
+</div></div>
+
+<div class="md hid" id="loadPresetMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
+<div class="mt">🍽 Ajouter à quel repas ?</div>
+<div id="loadPresetMealList"></div>
+<button class="btn bo" style="margin-top:8px" onclick="document.getElementById('loadPresetMd').classList.add('hid')">Annuler</button>
 </div></div>
 
 <div class="md hid" id="csMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms">
@@ -1081,27 +1090,27 @@ function getMealTemplate(){
   if(fr>=4){
     if(g==='bulk') return [
       {name:'🌅 Petit-déjeuner',pct:.18},
-      {name:'🥜 Collation matin',pct:.10},
+      {name:'🍎 Collation matin',pct:.10},
       {name:'☀️ Déjeuner',pct:.25},
       {name:'⚡ Shaker post-training',pct:.12},
-      {name:'🥜 Collation après-midi',pct:.10},
+      {name:'🍎 Collation après-midi',pct:.10},
       {name:'🌙 Dîner',pct:.25}
     ];
     if(g==='cut') return [
       {name:'🌅 Petit-déjeuner',pct:.15},
-      {name:'🥜 Collation matin',pct:.10},
+      {name:'🍎 Collation matin',pct:.10},
       {name:'☀️ Déjeuner',pct:.28},
       {name:'⚡ Shaker post-training',pct:.12},
-      {name:'🥜 Collation après-midi',pct:.08},
+      {name:'🍎 Collation après-midi',pct:.08},
       {name:'🌙 Dîner',pct:.27}
     ];
     // recomp / maintain
     return [
       {name:'🌅 Petit-déjeuner',pct:.17},
-      {name:'🥜 Collation matin',pct:.10},
+      {name:'🍎 Collation matin',pct:.10},
       {name:'☀️ Déjeuner',pct:.25},
       {name:'⚡ Shaker post-training',pct:.12},
-      {name:'🥜 Collation après-midi',pct:.10},
+      {name:'🍎 Collation après-midi',pct:.10},
       {name:'🌙 Dîner',pct:.26}
     ];
   }
@@ -1109,20 +1118,26 @@ function getMealTemplate(){
   if(g==='bulk') return [
     {name:'🌅 Petit-déjeuner',pct:.20},
     {name:'☀️ Déjeuner',pct:.28},
-    {name:'🥜 Collation',pct:.15},
+    {name:'🍎 Collation',pct:.15},
     {name:'🌙 Dîner',pct:.27},
     {name:'⚡ Shaker post-training',pct:.10}
   ];
   return [
     {name:'🌅 Petit-déjeuner',pct:.18},
     {name:'☀️ Déjeuner',pct:.30},
-    {name:'🥜 Collation',pct:.12},
+    {name:'🍎 Collation',pct:.12},
     {name:'🌙 Dîner',pct:.28},
     {name:'⚡ Shaker post-training',pct:.12}
   ];
 }
 
-function gNu(){const d=td();if(!nL[d]){const tpl=getMealTemplate();nL[d]={meals:tpl.map(t=>({name:t.name,pct:t.pct,items:[]}))};}return nL[d];}
+function migrateMealEmojis(meals){
+  if(!meals)return;
+  meals.forEach(m=>{
+    if(m.name)m.name=m.name.replace('🥜 Collation','🍎 Collation');
+  });
+}
+function gNu(){const d=td();if(!nL[d]){const tpl=getMealTemplate();nL[d]={meals:tpl.map(t=>({name:t.name,pct:t.pct,items:[]}))};}migrateMealEmojis(nL[d].meals);return nL[d];}
 
 // ═══ FOOD DATABASE ═══ (per 100g — proteins weighed COOKED, carbs weighed RAW)
 const FOODS=[
@@ -1544,7 +1559,7 @@ _openMeals.forEach(mi=>{
 const fs=document.getElementById('favSec');
 if(favFoods.length){fs.style.display='block';document.getElementById('favList').innerHTML=favFoods.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:6px">
 <div style="flex:1;cursor:pointer" onclick="addFav(${i})"><div style="font-size:13px;font-weight:500">${f.emoji||'🍽'} ${f.name}</div><div style="display:flex;gap:6px;font-size:9px;margin-top:2px"><span style="color:var(--orange)">${f.kcal}kcal</span><span style="color:var(--blue)">P${f.prot||0}</span><span style="color:var(--green)">G${f.carbs||0}</span><span style="color:var(--ac)">L${f.fat||0}</span></div></div>
-<div style="display:flex;gap:4px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:6px;background:var(--acd);border:1px solid var(--acm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px" onclick="editFav(${i})">✏️</div><div style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--red)" onclick="rmFav(${i})">×</div></div>
+<div style="display:flex;gap:4px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:6px;background:var(--acd);border:1px solid var(--acm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px" onclick="addFav(${i})" title="Ajouter">+</div><div style="width:28px;height:28px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px" onclick="editFav(${i})" title="Modifier">✏️</div><div style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--red)" onclick="rmFav(${i})" title="Supprimer">×</div></div>
 </div>`).join('');}
 else{fs.style.display='none';}
 renderRecents();
@@ -1636,7 +1651,7 @@ try{
   if(!r.ok)throw new Error('HTTP '+r.status);
   const d=await r.json();
   const prods=(d.products||[]).filter(p=>p.product_name&&p.nutriments&&(p.nutriments['energy-kcal_100g']||p.nutriments.proteins_100g));
-  if(!prods.length){res.innerHTML='<div style="text-align:center;padding:12px;color:var(--dim)">Aucun résultat pour "'+q+'"</div>';return;}
+  if(!prods.length){res.innerHTML='<div style="text-align:center;padding:12px;color:var(--dim)">Aucun résultat pour "'+q+'"</div>';document.getElementById('offClose').style.display='block';return;}
   window._offProducts=prods;
   res.innerHTML=prods.map((p,i)=>{
     const nm=(p.product_name||'').substring(0,50)+(p.brands?' · '+p.brands.substring(0,20):'');
@@ -1660,6 +1675,7 @@ try{
     <div style="width:30px;height:30px;border-radius:50%;background:var(--acd);border:1px solid var(--acm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:var(--ac)">+</div>
     </div>`;
   }).join('');
+  document.getElementById('offClose').style.display='block';
 }catch(e){
   res.innerHTML=`<div style="padding:12px;text-align:center"><div style="color:var(--orange);font-size:12px;margin-bottom:6px">⚠️ Recherche indisponible ici</div><div style="font-size:11px;color:var(--dim)">Ouvre le fichier dans ton navigateur (Safari/Chrome) pour utiliser OpenFoodFacts.<br>La saisie manuelle reste disponible ci-dessous.</div></div>`;
 }
@@ -1704,6 +1720,8 @@ if(!favFoods.find(x=>x.name===s.nm&&x.grams===g)){
 }
 document.getElementById('offRes').innerHTML='';
 document.getElementById('offQ').value='';
+document.getElementById('offClose').style.display='none';
+toast(item.name+' ajouté','success',2000);
 rNu();
 }
 
@@ -1737,7 +1755,28 @@ selEmoji='🍽';
 rNu();
 }
 
-function addFav(i){const f=favFoods[i];const mi=parseInt(document.getElementById('nMS').value)||0;gNu().meals[mi].items.push({...f,eaten:true});L.s('nL',nL);rNu();}
+let _addFavIdx=null;
+function addFav(i){
+  _addFavIdx=i;
+  const nt=gNu();
+  document.getElementById('loadPresetMd').querySelector('.mt').textContent='🍽 Ajouter à quel repas ?';
+  document.getElementById('loadPresetMealList').innerHTML=nt.meals.map((m,mi)=>
+    '<button class="btn bo" style="margin-bottom:6px;text-align:left" onclick="confirmAddFav('+mi+')">'+m.name+'</button>'
+  ).join('');
+  document.getElementById('loadPresetMd').classList.remove('hid');
+}
+function confirmAddFav(mi){
+  if(_addFavIdx===null)return;
+  const f=favFoods[_addFavIdx];
+  if(!f)return;
+  gNu().meals[mi].items.push({...f,eaten:true});
+  L.s('nL',nL);
+  document.getElementById('loadPresetMd').classList.add('hid');
+  _openMeals.add(mi);
+  _addFavIdx=null;
+  rNu();
+  toast(f.name+' ajouté','success',2000);
+}
 function rmFav(i){favFoods.splice(i,1);L.s('fav',favFoods);rNu();}
 let _editFavIdx=null;
 function editFav(i){
@@ -2138,6 +2177,13 @@ document.getElementById('homeWaterRing').innerHTML=`<div style="position:relativ
 </div>`;
 document.getElementById('homeWaterCur').textContent=curL+'L';
 document.getElementById('homeWaterGoal').textContent='/ '+goalL+'L';
+const remaining=Math.max(0,goal-cur);
+const glassesLeft=Math.ceil(remaining/250);
+const glassEl=document.getElementById('homeWaterGlasses');
+if(glassEl){
+  if(remaining<=0)glassEl.innerHTML='<span style="color:var(--blue)">✅ Objectif atteint !</span>';
+  else glassEl.textContent='🥛 '+glassesLeft+' verre'+(glassesLeft>1?'s':'')+' restant'+(glassesLeft>1?'s':'');
+}
 }
 
 function tTh(){const l=document.body.classList.toggle('light');document.getElementById('tBtn').textContent=l?'🌑':'🌙';try{localStorage.setItem('d3_th',l?'l':'d')}catch(e){}if(wE.length>1)drCh();}
@@ -2501,19 +2547,28 @@ function renderRecents() {
   ).join('');
 }
 
+let _addRecentIdx=null;
 function addRecent(idx) {
-  const f = recentFoods[idx];
-  if (!f) return;
-  const mi = parseInt(document.getElementById('nMS').value) || 0;
-  const item = {
-    name: f.n, emoji: f.e, grams: f.grams || 100,
-    kcal: f.k, prot: f.p, carbs: f.g, fat: f.l,
-    eaten: true, _dbIdx: f._dbIdx
-  };
+  _addRecentIdx=idx;
+  const nt=gNu();
+  document.getElementById('loadPresetMd').querySelector('.mt').textContent='🍽 Ajouter à quel repas ?';
+  document.getElementById('loadPresetMealList').innerHTML=nt.meals.map((m,mi)=>
+    '<button class="btn bo" style="margin-bottom:6px;text-align:left" onclick="confirmAddRecent('+mi+')">'+m.name+'</button>'
+  ).join('');
+  document.getElementById('loadPresetMd').classList.remove('hid');
+}
+function confirmAddRecent(mi){
+  if(_addRecentIdx===null)return;
+  const f=recentFoods[_addRecentIdx];
+  if(!f)return;
+  const item={name:f.n,emoji:f.e,grams:f.grams||100,kcal:f.k,prot:f.p,carbs:f.g,fat:f.l,eaten:true,_dbIdx:f._dbIdx};
   gNu().meals[mi].items.push(item);
-  L.s('nL', nL);
+  L.s('nL',nL);
+  document.getElementById('loadPresetMd').classList.add('hid');
+  _openMeals.add(mi);
+  _addRecentIdx=null;
   rNu();
-  toast(f.e + ' ' + f.n + ' ajouté', 'success', 2000);
+  toast(f.e+' '+f.n+' ajouté','success',2000);
 }
 
 // ═══ DATA VALIDATION ON IMPORT ═══
@@ -2598,17 +2653,33 @@ function confirmSavePreset() {
   renderMealPresets();
 }
 
+let _loadPresetIdx=null;
 function loadMealPreset(idx) {
   const preset = mealPresets[idx];
   if (!preset) return;
-  const mi = parseInt(document.getElementById('nMS').value) || 0;
-  const nt = gNu();
-  preset.items.forEach(item => {
-    nt.meals[mi].items.push({...item, eaten: true});
+  _loadPresetIdx=idx;
+  const nt=gNu();
+  document.getElementById('loadPresetMd').querySelector('.mt').textContent='🍽 Ajouter "'+preset.name+'" à quel repas ?';
+  document.getElementById('loadPresetMealList').innerHTML=nt.meals.map((m,mi)=>
+    '<button class="btn bo" style="margin-bottom:6px;text-align:left" onclick="confirmLoadPreset('+mi+')">'+m.name+'</button>'
+  ).join('');
+  document.getElementById('loadPresetMd').classList.remove('hid');
+}
+
+function confirmLoadPreset(mi){
+  if(_loadPresetIdx===null)return;
+  const preset=mealPresets[_loadPresetIdx];
+  if(!preset)return;
+  const nt=gNu();
+  preset.items.forEach(item=>{
+    nt.meals[mi].items.push({...item,eaten:true});
   });
-  L.s('nL', nL);
+  L.s('nL',nL);
+  document.getElementById('loadPresetMd').classList.add('hid');
+  _loadPresetIdx=null;
+  _openMeals.add(mi);
   rNu();
-  toast(preset.name + ' chargé !', 'success', 2000);
+  toast(preset.name+' → '+nt.meals[mi].name,'success',2000);
 }
 
 function deleteMealPreset(idx) {
@@ -2626,9 +2697,82 @@ function editPresetName(idx) {
   if (!p) return;
   _editPresetIdx=idx;
   document.getElementById('epNameInp').value=p.name;
+  renderPresetItems();
   document.getElementById('editPresetMd').classList.remove('hid');
   setTimeout(()=>document.getElementById('epNameInp').focus(),200);
 }
+
+function renderPresetItems(){
+  if(_editPresetIdx===null)return;
+  const p=mealPresets[_editPresetIdx];
+  if(!p)return;
+  const el=document.getElementById('epItemsList');
+  el.innerHTML=p.items.map((it,ii)=>
+    '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--bd)">'+
+    '<span style="font-size:14px">'+(it.emoji||'🍽')+'</span>'+
+    '<div style="flex:1;min-width:0">'+
+      '<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+it.name+(it.grams?' <span style="color:var(--dim)">'+it.grams+'g</span>':'')+'</div>'+
+      '<div style="display:flex;gap:6px;font-size:9px;margin-top:1px"><span style="color:var(--orange)">'+(it.kcal||0)+'kcal</span><span style="color:var(--blue)">P'+(it.prot||0)+'</span><span style="color:var(--green)">G'+(it.carbs||0)+'</span><span style="color:var(--ac)">L'+(it.fat||0)+'</span></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:4px;flex-shrink:0">'+
+      '<div style="width:26px;height:26px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px" onclick="editPresetItem('+ii+')">✏️</div>'+
+      '<div style="width:26px;height:26px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--red)" onclick="removePresetItem('+ii+')">×</div>'+
+    '</div></div>'
+  ).join('')+
+  (p.items.length===0?'<div style="padding:12px;text-align:center;color:var(--fnt);font-size:12px">Aucun aliment</div>':'');
+}
+
+function removePresetItem(ii){
+  if(_editPresetIdx===null)return;
+  const p=mealPresets[_editPresetIdx];
+  if(!p)return;
+  p.items.splice(ii,1);
+  p.totalKcal=p.items.reduce((s,i)=>s+(i.kcal||0),0);
+  p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
+  p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
+  p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
+  renderPresetItems();
+}
+
+function editPresetItem(ii){
+  if(_editPresetIdx===null)return;
+  const p=mealPresets[_editPresetIdx];
+  if(!p||!p.items[ii])return;
+  const it=p.items[ii];
+  const el=document.getElementById('epItemsList');
+  // Replace item row with inline editor
+  const rows=el.children;
+  if(!rows[ii])return;
+  rows[ii].innerHTML=
+    '<div style="width:100%;padding:8px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs)">'+
+    '<div style="font-size:11px;font-weight:600;margin-bottom:6px">'+(it.emoji||'🍽')+' '+it.name+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:4px">'+
+      '<div><div style="font-size:7px;color:var(--dim)">G</div><input class="inp" type="number" id="epi_g" value="'+(it.grams||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+      '<div><div style="font-size:7px;color:var(--dim)">KCAL</div><input class="inp" type="number" id="epi_k" value="'+(it.kcal||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+      '<div><div style="font-size:7px;color:var(--dim)">P</div><input class="inp" type="number" id="epi_p" value="'+(it.prot||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+      '<div><div style="font-size:7px;color:var(--dim)">G</div><input class="inp" type="number" id="epi_c" value="'+(it.carbs||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+      '<div><div style="font-size:7px;color:var(--dim)">L</div><input class="inp" type="number" id="epi_f" value="'+(it.fat||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+    '</div>'+
+    '<button class="btn ba bs" style="margin-top:6px;padding:6px" onclick="savePresetItem('+ii+')">✓</button>'+
+    '</div>';
+}
+
+function savePresetItem(ii){
+  if(_editPresetIdx===null)return;
+  const p=mealPresets[_editPresetIdx];
+  if(!p||!p.items[ii])return;
+  p.items[ii].grams=parseInt(document.getElementById('epi_g').value)||0;
+  p.items[ii].kcal=parseInt(document.getElementById('epi_k').value)||0;
+  p.items[ii].prot=parseInt(document.getElementById('epi_p').value)||0;
+  p.items[ii].carbs=parseInt(document.getElementById('epi_c').value)||0;
+  p.items[ii].fat=parseInt(document.getElementById('epi_f').value)||0;
+  p.totalKcal=p.items.reduce((s,i)=>s+(i.kcal||0),0);
+  p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
+  p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
+  p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
+  renderPresetItems();
+}
+
 function confirmEditPreset(){
   if(_editPresetIdx===null)return;
   const name=document.getElementById('epNameInp').value.trim();
@@ -2638,7 +2782,7 @@ function confirmEditPreset(){
   document.getElementById('editPresetMd').classList.add('hid');
   _editPresetIdx=null;
   renderMealPresets();
-  toast('Repas renommé','success',2000);
+  toast('Repas modifié','success',2000);
 }
 
 function renderMealPresets() {
@@ -2680,7 +2824,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
           const newWorker = reg.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-              toast('Mise à jour disponible — rafraîchis la page', 'info', 5000);
+              window.location.reload();
             }
           });
         });
