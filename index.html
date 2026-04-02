@@ -243,19 +243,23 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
   <div class="ct2">🍽 Ajouter un aliment</div>
   <div class="lb">Repas</div>
   <select class="inp" id="nMS" style="margin-bottom:10px"></select>
-  <div class="lb">Rechercher un aliment</div>
-  <input class="inp" id="foodQ" placeholder="Poulet, riz, avoine, whey…" style="margin-bottom:6px;font-size:16px" oninput="filterFoods()">
+  <input class="inp" id="foodQ" placeholder="🔍 Rechercher un aliment…" style="margin-bottom:6px;font-size:14px" oninput="filterFoods()">
   <div id="foodResults" style="max-height:200px;overflow-y:auto;margin-bottom:10px"></div>
-  <div id="foodPortionBox" style="display:none;padding:12px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs);margin-bottom:10px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:14px;font-weight:600" id="fpName">—</span><span style="font-size:10px;color:var(--dim)" id="fpBase">pour 100g</span></div>
-    <div class="g2" style="margin-bottom:8px">
-      <div><div class="lb">Portions (×100g)</div><input class="inp" type="number" id="fpQty" value="1" min="0.1" step="0.1" style="font-size:16px;text-align:center" oninput="calcPortion()"></div>
-      <div><div class="lb">= Grammes</div><input class="inp" type="number" id="fpGrams" style="font-size:16px;text-align:center" oninput="calcPortionFromG()"></div>
-    </div>
-    <div style="display:flex;gap:12px;margin-bottom:10px" id="fpPreview"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn ba" onclick="addFromDB()" style="flex:1">🍽 Ajouter au repas</button>
-      <button class="btn bo" onclick="addFromDBFav()" style="flex-shrink:0;padding:10px 14px" title="Ajouter aux favoris">⭐</button>
+  <div id="foodPortionBox" style="display:none;margin-bottom:10px">
+    <div style="padding:14px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--r)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:15px;font-weight:700" id="fpName">—</span>
+        <span style="font-size:10px;color:var(--dim);background:var(--s2);padding:2px 8px;border-radius:12px" id="fpBase">pour 100g</span>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div><div class="lb">Portions (×100g)</div><input class="inp" type="number" id="fpQty" value="1" min="0.1" step="0.1" style="font-size:16px;text-align:center" oninput="calcPortion()"></div>
+        <div><div class="lb">= Grammes</div><input class="inp" type="number" id="fpGrams" style="font-size:16px;text-align:center" oninput="calcPortionFromG()"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;justify-content:center" id="fpPreview"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ba" onclick="addFromDB()" style="flex:1;padding:12px;font-size:13px">🍽 Ajouter</button>
+        <button class="btn bo" onclick="addFromDBFav()" style="width:48px;display:flex;align-items:center;justify-content:center;font-size:18px" title="Sauver en favori">⭐</button>
+      </div>
     </div>
   </div>
   <div style="border-top:1px solid var(--bd);padding-top:10px;margin-top:6px">
@@ -1713,7 +1717,6 @@ function confirmAddFav(mi){
   gNu().meals[mi].items.push({...f,eaten:true});
   L.s('nL',nL);
   document.getElementById('loadPresetMd').classList.add('hid');
-  _openMeals.add(mi);
   _addFavIdx=null;
   rNu();
   toast(f.name+' ajouté','success',2000);
@@ -2506,7 +2509,6 @@ function confirmAddRecent(mi){
   gNu().meals[mi].items.push(item);
   L.s('nL',nL);
   document.getElementById('loadPresetMd').classList.add('hid');
-  _openMeals.add(mi);
   _addRecentIdx=null;
   rNu();
   toast(f.e+' '+f.n+' ajouté','success',2000);
@@ -2628,7 +2630,6 @@ function confirmLoadPreset(mi){
   L.s('nL',nL);
   document.getElementById('loadPresetMd').classList.add('hid');
   _loadPresetIdx=null;
-  _openMeals.add(mi);
   rNu();
   toast(preset.name+' → '+nt.meals[mi].name,'success',2000);
 }
@@ -2807,6 +2808,7 @@ function renderMealPresets() {
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0">
         <div style="width:28px;height:28px;border-radius:6px;background:var(--acd);border:1px solid var(--acm);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px" onclick="loadMealPreset(${i})">+</div>
+        <div style="width:28px;height:28px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px" onclick="cyclePresetCat(${i})" title="Changer catégorie">🏷️</div>
         <div style="width:28px;height:28px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px" onclick="editPresetName(${i})">✏️</div>
         <div style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,90,.08);border:1px solid rgba(255,77,90,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--red)" onclick="deleteMealPreset(${i})">×</div>
       </div></div>`;
@@ -2820,8 +2822,29 @@ function togglePresetCat(id){
   if(_openPresetCats.has(id))_openPresetCats.delete(id);else _openPresetCats.add(id);
   const el=document.getElementById('presetCat_'+id);
   if(el)el.style.display=_openPresetCats.has(id)?'block':'none';
-  // Toggle chevron
   el?.previousElementSibling?.querySelector('span:last-child')?.style&&(el.previousElementSibling.querySelector('span:last-child').style.transform=_openPresetCats.has(id)?'rotate(180deg)':'');
+}
+
+let _catPickIdx=null;
+function cyclePresetCat(idx){
+  _catPickIdx=idx;
+  const p=mealPresets[idx];if(!p)return;
+  document.getElementById('loadPresetMd').querySelector('.mt').textContent='🏷️ Catégorie pour "'+p.name+'"';
+  document.getElementById('loadPresetMealList').innerHTML=PRESET_CATS.map(c=>
+    '<button class="btn '+(getPresetCat(p)===c.id?'ba':'bo')+'" style="margin-bottom:6px;text-align:left" onclick="confirmCatPick(\''+c.id+'\')">'+c.name+(getPresetCat(p)===c.id?' ✓':'')+'</button>'
+  ).join('');
+  document.getElementById('loadPresetMd').classList.remove('hid');
+}
+
+function confirmCatPick(catId){
+  if(_catPickIdx===null)return;
+  mealPresets[_catPickIdx].category=catId;
+  L.s('mealPresets',mealPresets);
+  document.getElementById('loadPresetMd').classList.add('hid');
+  const label=PRESET_CATS.find(c=>c.id===catId);
+  toast(mealPresets[_catPickIdx].name+' → '+(label?label.name:catId),'success',1500);
+  _catPickIdx=null;
+  renderMealPresets();
 }
 
 // ═══ SERVICE WORKER REGISTRATION ═══
