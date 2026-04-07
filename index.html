@@ -327,6 +327,7 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
   <option value="dej">☀️ Déjeuner</option>
   <option value="diner">🌙 Dîner</option>
   <option value="collation">🍎 Collation</option>
+  <option value="cheat">🍔 Cheat Meal</option>
 </select>
 <div id="presetPreview" style="margin-bottom:12px"></div>
 <div class="ma"><button class="btn bo" onclick="document.getElementById('presetMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="confirmSavePreset()">💾 Enregistrer</button></div>
@@ -357,6 +358,7 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
   <option value="dej">☀️ Déjeuner</option>
   <option value="diner">🌙 Dîner</option>
   <option value="collation">🍎 Collation</option>
+  <option value="cheat">🍔 Cheat Meal</option>
 </select>
 <div class="lb">Aliments</div>
 <div id="epItemsList" style="margin-bottom:8px"></div>
@@ -1266,7 +1268,6 @@ const FOODS=[
 {n:'Lait d\'avoine',e:'🥛',cat:'other',k:43,p:0.3,g:7,l:1.5},
 {n:'Crème de riz (crue)',e:'🥣',cat:'carb',k:370,p:6,g:80,l:1},
 {n:'Blanc de dinde fumé',e:'🍗',cat:'prot',k:105,p:21,g:1,l:2},
-,
 // ═══ AJOUTS — 200+ ALIMENTS QUOTIDIENS ═══
 // 🍗 PROTEINES SUPPLÉMENTAIRES
 {n:'Escalope de veau',e:'🥩',cat:'prot',k:172,p:28,g:0,l:6},
@@ -1346,7 +1347,7 @@ const FOODS=[
 {n:'Chou-fleur',e:'🥦',cat:'veg',k:25,p:2,g:3,l:0.3},
 {n:'Chou rouge',e:'🥬',cat:'veg',k:31,p:1.4,g:5,l:0.2},
 {n:'Chou vert',e:'🥬',cat:'veg',k:25,p:1.3,g:4,l:0.1},
-{n:'Brocoli',e:'🥦',cat:'veg',k:34,p:2.8,g:4,l:0.4},
+{n:'Brocoli romanesco',e:'🥦',cat:'veg',k:30,p:2.5,g:4,l:0.3},
 {n:'Chou de Bruxelles',e:'🥬',cat:'veg',k:43,p:3.4,g:5,l:0.3},
 {n:'Chou kale',e:'🥬',cat:'veg',k:49,p:4.3,g:4,l:0.9},
 {n:'Artichaut',e:'🥗',cat:'veg',k:47,p:3.3,g:5,l:0.2},
@@ -1480,7 +1481,764 @@ const FOODS=[
 {n:'Sauce barbecue',e:'🥫',cat:'other',k:170,p:1,g:40,l:0.5},
 {n:'Sauce sriracha',e:'🌶️',cat:'other',k:93,p:2,g:19,l:1},
 {n:'Vinaigre balsamique',e:'🥫',cat:'other',k:88,p:0.5,g:17,l:0},
-{n:'Sauce teriyaki',e:'🥫',cat:'other',k:89,p:6,g:16,l:0}
+{n:'Sauce teriyaki',e:'🥫',cat:'other',k:89,p:6,g:16,l:0},
+// ═══ EXTENSION — 500 ALIMENTS SUPPLÉMENTAIRES ═══
+
+// 🧀 FROMAGES (per 100g)
+{n:'Camembert',e:'🧀',cat:'dairy',k:299,p:20,g:0.5,l:24},
+{n:'Brie',e:'🧀',cat:'dairy',k:334,p:21,g:0.5,l:27},
+{n:'Roquefort',e:'🧀',cat:'dairy',k:369,p:22,g:2,l:31},
+{n:'Bleu d\'Auvergne',e:'🧀',cat:'dairy',k:353,p:20,g:1,l:30},
+{n:'Comté',e:'🧀',cat:'dairy',k:413,p:27,g:0.5,l:34},
+{n:'Gruyère',e:'🧀',cat:'dairy',k:413,p:27,g:0.4,l:33},
+{n:'Beaufort',e:'🧀',cat:'dairy',k:401,p:26,g:0,l:33},
+{n:'Cantal',e:'🧀',cat:'dairy',k:389,p:24,g:0.5,l:32},
+{n:'Reblochon',e:'🧀',cat:'dairy',k:328,p:20,g:0,l:27},
+{n:'Raclette',e:'🧀',cat:'dairy',k:357,p:23,g:0.5,l:29},
+{n:'Saint-Nectaire',e:'🧀',cat:'dairy',k:351,p:22,g:0.5,l:29},
+{n:'Munster',e:'🧀',cat:'dairy',k:327,p:21,g:0,l:27},
+{n:'Chèvre frais',e:'🧀',cat:'dairy',k:200,p:13,g:1,l:16},
+{n:'Chèvre sec / Bûche',e:'🧀',cat:'dairy',k:370,p:22,g:1,l:31},
+{n:'Feta',e:'🧀',cat:'dairy',k:264,p:14,g:4,l:21},
+{n:'Ricotta',e:'🧀',cat:'dairy',k:174,p:11,g:3,l:13},
+{n:'Mascarpone',e:'🧀',cat:'dairy',k:429,p:5,g:3,l:44},
+{n:'Boursin',e:'🧀',cat:'dairy',k:380,p:8,g:2,l:38},
+{n:'Vache qui rit (1 portion)',e:'🧀',cat:'dairy',k:233,p:11,g:6,l:18},
+{n:'Kiri (1 portion)',e:'🧀',cat:'dairy',k:304,p:8,g:4,l:29},
+{n:'Babybel (1 pièce)',e:'🧀',cat:'dairy',k:310,p:23,g:0,l:24},
+{n:'Gouda',e:'🧀',cat:'dairy',k:356,p:25,g:2,l:27},
+{n:'Edam',e:'🧀',cat:'dairy',k:357,p:25,g:1,l:28},
+{n:'Cheddar',e:'🧀',cat:'dairy',k:403,p:25,g:1,l:33},
+{n:'Mimolette',e:'🧀',cat:'dairy',k:347,p:24,g:0,l:28},
+{n:'Maroilles',e:'🧀',cat:'dairy',k:331,p:21,g:0,l:27},
+{n:'Pont-l\'Évêque',e:'🧀',cat:'dairy',k:310,p:19,g:0,l:26},
+{n:'Tomme de Savoie',e:'🧀',cat:'dairy',k:349,p:23,g:0.5,l:28},
+{n:'Ossau-Iraty',e:'🧀',cat:'dairy',k:370,p:24,g:0,l:30},
+{n:'Fromage râpé',e:'🧀',cat:'dairy',k:395,p:28,g:0.5,l:31},
+{n:'Cream cheese (Philadelphia)',e:'🧀',cat:'dairy',k:342,p:6,g:4,l:34},
+{n:'Halloumi',e:'🧀',cat:'dairy',k:321,p:21,g:3,l:25},
+{n:'Burrata',e:'🧀',cat:'dairy',k:280,p:16,g:1,l:23},
+{n:'Pecorino',e:'🧀',cat:'dairy',k:387,p:32,g:0,l:28},
+{n:'Gorgonzola',e:'🧀',cat:'dairy',k:353,p:19,g:1,l:30},
+{n:'Provolone',e:'🧀',cat:'dairy',k:351,p:26,g:2,l:27},
+// 🥛 PRODUITS LAITIERS SUPPLÉMENTAIRES
+{n:'Yaourt nature',e:'🥛',cat:'dairy',k:63,p:5,g:4,l:3},
+{n:'Yaourt 0%',e:'🥛',cat:'dairy',k:42,p:4,g:5,l:0.1},
+{n:'Yaourt aux fruits',e:'🥛',cat:'dairy',k:95,p:3.5,g:15,l:2.5},
+{n:'Petit suisse',e:'🥛',cat:'dairy',k:117,p:7,g:4,l:8},
+{n:'Crème fraîche épaisse 30%',e:'🥛',cat:'dairy',k:300,p:2.5,g:3,l:30},
+{n:'Crème fraîche légère 15%',e:'🥛',cat:'dairy',k:162,p:2.5,g:4,l:15},
+{n:'Crème liquide 35%',e:'🥛',cat:'dairy',k:337,p:2,g:3,l:35},
+{n:'Lait écrémé',e:'🥛',cat:'dairy',k:34,p:3.4,g:5,l:0.1},
+{n:'Lait concentré sucré',e:'🥛',cat:'dairy',k:321,p:8,g:54,l:8},
+{n:'Lait concentré non sucré',e:'🥛',cat:'dairy',k:134,p:7,g:10,l:7.5},
+{n:'Lait de coco',e:'🥥',cat:'dairy',k:197,p:2,g:3,l:21},
+{n:'Crème de coco',e:'🥥',cat:'dairy',k:330,p:3,g:3,l:35},
+{n:'Lait de soja',e:'🥛',cat:'other',k:33,p:3,g:0.7,l:1.8},
+{n:'Lait de riz',e:'🥛',cat:'other',k:47,p:0.3,g:9,l:1},
+{n:'Yaourt soja',e:'🥛',cat:'other',k:50,p:4,g:2,l:2.3},
+{n:'Kéfir',e:'🥛',cat:'dairy',k:41,p:3.3,g:4,l:1},
+{n:'Faisselle',e:'🥛',cat:'dairy',k:73,p:7,g:3.5,l:3.5},
+{n:'Danette chocolat',e:'🍫',cat:'dairy',k:120,p:3.5,g:18,l:3.5},
+{n:'Mousse au chocolat',e:'🍫',cat:'dairy',k:185,p:4,g:20,l:10},
+{n:'Île flottante (portion)',e:'🍮',cat:'dairy',k:140,p:5,g:22,l:3},
+{n:'Panna cotta (portion)',e:'🍮',cat:'dairy',k:220,p:3,g:22,l:14},
+{n:'Flan pâtissier (1 part)',e:'🍮',cat:'dairy',k:215,p:6,g:28,l:9},
+// 🍺 ALCOOL (par contenant standard)
+{n:'Bière blonde (250ml)',e:'🍺',cat:'other',k:110,p:1,g:9,l:0},
+{n:'Bière blanche (250ml)',e:'🍺',cat:'other',k:105,p:1,g:10,l:0},
+{n:'Bière IPA (250ml)',e:'🍺',cat:'other',k:130,p:1,g:12,l:0},
+{n:'Bière brune / stout (250ml)',e:'🍺',cat:'other',k:115,p:1.2,g:10,l:0},
+{n:'Bière sans alcool (330ml)',e:'🍺',cat:'other',k:69,p:0.5,g:15,l:0},
+{n:'Bière forte 8° (250ml)',e:'🍺',cat:'other',k:165,p:1,g:14,l:0},
+{n:'Vin rosé (150ml)',e:'🍷',cat:'other',k:110,p:0.1,g:3,l:0},
+{n:'Champagne (150ml)',e:'🥂',cat:'other',k:120,p:0.1,g:3,l:0},
+{n:'Prosecco (150ml)',e:'🥂',cat:'other',k:110,p:0.1,g:2,l:0},
+{n:'Cidre doux (250ml)',e:'🍺',cat:'other',k:100,p:0,g:15,l:0},
+{n:'Cidre brut (250ml)',e:'🍺',cat:'other',k:80,p:0,g:6,l:0},
+{n:'Whisky (4cl)',e:'🥃',cat:'other',k:92,p:0,g:0,l:0},
+{n:'Vodka (4cl)',e:'🥃',cat:'other',k:89,p:0,g:0,l:0},
+{n:'Rhum (4cl)',e:'🥃',cat:'other',k:92,p:0,g:0,l:0},
+{n:'Gin (4cl)',e:'🥃',cat:'other',k:92,p:0,g:0,l:0},
+{n:'Tequila (4cl)',e:'🥃',cat:'other',k:90,p:0,g:0,l:0},
+{n:'Pastis (2cl + eau)',e:'🥃',cat:'other',k:47,p:0,g:1.5,l:0},
+{n:'Baileys (4cl)',e:'🥃',cat:'other',k:131,p:1,g:10,l:6},
+{n:'Amaretto (4cl)',e:'🥃',cat:'other',k:110,p:0,g:13,l:0},
+{n:'Mojito (200ml)',e:'🍹',cat:'other',k:195,p:0,g:24,l:0},
+{n:'Piña Colada (200ml)',e:'🍹',cat:'other',k:235,p:0.5,g:30,l:7},
+{n:'Margarita (200ml)',e:'🍹',cat:'other',k:200,p:0,g:16,l:0},
+{n:'Spritz (200ml)',e:'🍹',cat:'other',k:130,p:0,g:9,l:0},
+{n:'Gin tonic (250ml)',e:'🍹',cat:'other',k:170,p:0,g:12,l:0},
+{n:'Cuba libre (250ml)',e:'🍹',cat:'other',k:180,p:0,g:22,l:0},
+{n:'Kir (150ml)',e:'🍷',cat:'other',k:130,p:0,g:12,l:0},
+{n:'Sangria (200ml)',e:'🍷',cat:'other',k:150,p:0.2,g:18,l:0},
+{n:'Ti\'punch (5cl)',e:'🥃',cat:'other',k:130,p:0,g:8,l:0},
+{n:'Digestif / Cognac (3cl)',e:'🥃',cat:'other',k:70,p:0,g:0,l:0},
+{n:'Saké (100ml)',e:'🍶',cat:'other',k:134,p:0.5,g:5,l:0},
+// 🥤 BOISSONS NON-ALCOOLISÉES
+{n:'Orangina (330ml)',e:'🥤',cat:'other',k:145,p:0,g:35,l:0},
+{n:'Sprite (330ml)',e:'🥤',cat:'other',k:139,p:0,g:33,l:0},
+{n:'Fanta (330ml)',e:'🥤',cat:'other',k:152,p:0,g:38,l:0},
+{n:'7up (330ml)',e:'🥤',cat:'other',k:132,p:0,g:33,l:0},
+{n:'Pepsi (330ml)',e:'🥤',cat:'other',k:139,p:0,g:36,l:0},
+{n:'Dr Pepper (330ml)',e:'🥤',cat:'other',k:140,p:0,g:35,l:0},
+{n:'Ice Tea pêche (330ml)',e:'🥤',cat:'other',k:109,p:0,g:26,l:0},
+{n:'Lipton Green Ice Tea (330ml)',e:'🥤',cat:'other',k:79,p:0,g:19,l:0},
+{n:'Oasis tropical (330ml)',e:'🥤',cat:'other',k:115,p:0,g:28,l:0},
+{n:'Schweppes tonic (330ml)',e:'🥤',cat:'other',k:119,p:0,g:29,l:0},
+{n:'Red Bull (250ml)',e:'🥫',cat:'other',k:113,p:0,g:28,l:0},
+{n:'Monster Energy (500ml)',e:'🥫',cat:'other',k:220,p:0,g:56,l:0},
+{n:'Red Bull Zero (250ml)',e:'🥫',cat:'other',k:5,p:0,g:0,l:0},
+{n:'Monster Zero (500ml)',e:'🥫',cat:'other',k:10,p:0,g:0,l:0},
+{n:'Perrier (330ml)',e:'💧',cat:'other',k:0,p:0,g:0,l:0},
+{n:'San Pellegrino (330ml)',e:'💧',cat:'other',k:0,p:0,g:0,l:0},
+{n:'Eau de coco (330ml)',e:'🥥',cat:'other',k:60,p:0.7,g:12,l:0.2},
+{n:'Jus de tomate (200ml)',e:'🥤',cat:'other',k:34,p:1.6,g:6,l:0.1},
+{n:'Jus d\'ananas (200ml)',e:'🥤',cat:'other',k:106,p:0.6,g:26,l:0.2},
+{n:'Jus de cranberry (200ml)',e:'🥤',cat:'other',k:92,p:0,g:23,l:0},
+{n:'Jus multivitaminé (200ml)',e:'🥤',cat:'other',k:96,p:0.4,g:22,l:0.2},
+{n:'Nectar de mangue (200ml)',e:'🥤',cat:'other',k:120,p:0.4,g:30,l:0},
+{n:'Limonade maison (250ml)',e:'🥤',cat:'other',k:100,p:0,g:25,l:0},
+{n:'Sirop menthe (dose 2cl)',e:'🥤',cat:'other',k:55,p:0,g:14,l:0},
+{n:'Sirop grenadine (dose 2cl)',e:'🥤',cat:'other',k:56,p:0,g:14,l:0},
+{n:'Chocolat chaud (200ml)',e:'☕',cat:'other',k:180,p:6,g:24,l:6},
+{n:'Thé noir',e:'🍵',cat:'other',k:1,p:0,g:0,l:0},
+{n:'Tisane / Infusion',e:'🍵',cat:'other',k:1,p:0,g:0,l:0},
+{n:'Café espresso',e:'☕',cat:'other',k:2,p:0.1,g:0,l:0},
+{n:'Americano',e:'☕',cat:'other',k:5,p:0.3,g:0,l:0},
+{n:'Frappuccino (300ml)',e:'☕',cat:'other',k:260,p:4,g:42,l:9},
+{n:'Matcha latte (300ml)',e:'🍵',cat:'other',k:150,p:5,g:20,l:5},
+{n:'Chai latte (300ml)',e:'☕',cat:'other',k:160,p:4,g:28,l:4},
+// 🍕 FAST-FOOD & PLATS PRÉPARÉS
+{n:'Big Mac',e:'🍔',cat:'other',k:257,p:13,g:20,l:14},
+{n:'Cheeseburger',e:'🍔',cat:'other',k:263,p:13,g:24,l:12},
+{n:'Double Cheese',e:'🍔',cat:'other',k:275,p:16,g:22,l:14},
+{n:'Chicken McNuggets (9)',e:'🍗',cat:'other',k:259,p:15,g:16,l:15},
+{n:'McFlurry Oreo',e:'🍦',cat:'other',k:210,p:4,g:33,l:7},
+{n:'Frites McDonald\'s (moyenne)',e:'🍟',cat:'other',k:312,p:3.4,g:38,l:15},
+{n:'Frites maison',e:'🍟',cat:'other',k:196,p:3,g:28,l:8},
+{n:'Cordon bleu',e:'🍗',cat:'other',k:235,p:14,g:14,l:14},
+{n:'Poisson pané',e:'🐟',cat:'other',k:220,p:12,g:18,l:11},
+{n:'Beignet (nature)',e:'🍩',cat:'other',k:370,p:5,g:47,l:18},
+{n:'Donut',e:'🍩',cat:'other',k:421,p:5,g:49,l:22},
+{n:'Croissant',e:'🥐',cat:'other',k:406,p:8,g:45,l:21},
+{n:'Pain au chocolat',e:'🥐',cat:'other',k:414,p:8,g:47,l:22},
+{n:'Brioche',e:'🍞',cat:'other',k:357,p:8,g:50,l:14},
+{n:'Pain aux raisins',e:'🥐',cat:'other',k:340,p:7,g:46,l:14},
+{n:'Chausson aux pommes',e:'🥐',cat:'other',k:290,p:4,g:38,l:14},
+{n:'Croissant amandes',e:'🥐',cat:'other',k:450,p:9,g:40,l:28},
+{n:'Chouquettes (5 pièces)',e:'🍞',cat:'other',k:320,p:7,g:35,l:17},
+{n:'Éclair chocolat',e:'🍫',cat:'other',k:265,p:6,g:26,l:15},
+{n:'Millefeuille (1 part)',e:'🍰',cat:'other',k:370,p:5,g:38,l:22},
+{n:'Tarte aux pommes (1 part)',e:'🥧',cat:'other',k:260,p:3,g:35,l:12},
+{n:'Tarte au citron (1 part)',e:'🥧',cat:'other',k:320,p:4,g:38,l:17},
+{n:'Tarte tatin (1 part)',e:'🥧',cat:'other',k:280,p:3,g:38,l:13},
+{n:'Fondant chocolat (1 part)',e:'🍫',cat:'other',k:380,p:5,g:38,l:23},
+{n:'Tiramisu (1 part)',e:'🍰',cat:'other',k:300,p:6,g:30,l:17},
+{n:'Crème brûlée',e:'🍮',cat:'other',k:280,p:4,g:28,l:17},
+{n:'Profiteroles (3 pièces)',e:'🍫',cat:'other',k:350,p:6,g:35,l:20},
+{n:'Macaron (1 pièce)',e:'🍰',cat:'other',k:400,p:7,g:60,l:15},
+{n:'Financier (1 pièce)',e:'🍰',cat:'other',k:410,p:6,g:48,l:22},
+{n:'Madeleine (1 pièce)',e:'🍰',cat:'other',k:400,p:6,g:50,l:20},
+{n:'Clafoutis (1 part)',e:'🥧',cat:'other',k:195,p:5,g:25,l:8},
+{n:'Cheese-cake (1 part)',e:'🍰',cat:'other',k:321,p:6,g:25,l:22},
+{n:'Quatre-quarts',e:'🍰',cat:'other',k:390,p:6,g:48,l:19},
+{n:'Gâteau au yaourt',e:'🍰',cat:'other',k:310,p:5,g:42,l:14},
+// 🌭 CHARCUTERIE
+{n:'Saucisson sec',e:'🌭',cat:'prot',k:425,p:28,g:2,l:34},
+{n:'Chorizo',e:'🌭',cat:'prot',k:455,p:24,g:2,l:38},
+{n:'Rosette',e:'🌭',cat:'prot',k:410,p:27,g:1,l:33},
+{n:'Coppa',e:'🌭',cat:'prot',k:350,p:25,g:0,l:28},
+{n:'Bresaola',e:'🌭',cat:'prot',k:151,p:32,g:0,l:2.6},
+{n:'Rillettes (porc)',e:'🌭',cat:'prot',k:450,p:16,g:0,l:43},
+{n:'Pâté de campagne',e:'🌭',cat:'prot',k:320,p:14,g:2,l:28},
+{n:'Foie gras',e:'🌭',cat:'prot',k:462,p:7,g:5,l:44},
+{n:'Mortadelle',e:'🌭',cat:'prot',k:311,p:14,g:3,l:27},
+{n:'Salami',e:'🌭',cat:'prot',k:378,p:22,g:2,l:31},
+{n:'Andouillette',e:'🌭',cat:'prot',k:232,p:20,g:0,l:17},
+{n:'Terrine (1 tranche)',e:'🌭',cat:'prot',k:295,p:13,g:2,l:26},
+// 🍝 PLATS CUISINÉS & CUISINE DU MONDE
+{n:'Lasagnes bolognaise (portion)',e:'🍝',cat:'other',k:165,p:9,g:16,l:7},
+{n:'Gratin dauphinois (portion)',e:'🍠',cat:'other',k:145,p:4,g:14,l:8},
+{n:'Hachis parmentier (portion)',e:'🍠',cat:'other',k:130,p:7,g:12,l:6},
+{n:'Blanquette de veau (portion)',e:'🍲',cat:'other',k:145,p:12,g:6,l:8},
+{n:'Boeuf bourguignon (portion)',e:'🍲',cat:'other',k:160,p:14,g:5,l:9},
+{n:'Poulet rôti (avec peau)',e:'🍗',cat:'prot',k:239,p:27,g:0,l:14},
+{n:'Poulet rôti (sans peau)',e:'🍗',cat:'prot',k:190,p:29,g:0,l:8},
+{n:'Pot-au-feu (portion)',e:'🍲',cat:'other',k:85,p:8,g:5,l:3},
+{n:'Tartiflette (portion)',e:'🍠',cat:'other',k:190,p:9,g:12,l:12},
+{n:'Choucroute garnie (portion)',e:'🍲',cat:'other',k:155,p:10,g:5,l:10},
+{n:'Cassoulet (portion)',e:'🍲',cat:'other',k:140,p:10,g:10,l:7},
+{n:'Brandade de morue (portion)',e:'🐟',cat:'other',k:145,p:8,g:11,l:8},
+{n:'Fish & chips (portion)',e:'🐟',cat:'other',k:240,p:12,g:22,l:12},
+{n:'Pad thaï (portion)',e:'🍜',cat:'other',k:150,p:8,g:20,l:5},
+{n:'Curry vert poulet (portion)',e:'🍛',cat:'other',k:155,p:12,g:6,l:10},
+{n:'Tikka masala (portion)',e:'🍛',cat:'other',k:160,p:11,g:8,l:9},
+{n:'Dahl lentilles (portion)',e:'🍛',cat:'other',k:110,p:7,g:14,l:3},
+{n:'Chili con carne (portion)',e:'🌶️',cat:'other',k:130,p:9,g:11,l:5},
+{n:'Ramen (portion)',e:'🍜',cat:'other',k:190,p:10,g:22,l:7},
+{n:'Pho (portion)',e:'🍜',cat:'other',k:110,p:8,g:12,l:3},
+{n:'Bibimbap (portion)',e:'🍚',cat:'other',k:160,p:10,g:22,l:4},
+{n:'Gyoza (5 pièces)',e:'🥟',cat:'other',k:230,p:9,g:24,l:10},
+{n:'Raviolis chinois (5 pièces)',e:'🥟',cat:'other',k:210,p:8,g:26,l:8},
+{n:'Dim sum Ha Cao (4 pièces)',e:'🥟',cat:'other',k:180,p:10,g:18,l:7},
+{n:'Samossa (2 pièces)',e:'🥟',cat:'other',k:260,p:6,g:28,l:14},
+{n:'Bo bun (portion)',e:'🍜',cat:'other',k:145,p:10,g:18,l:4},
+{n:'Risotto (portion)',e:'🍚',cat:'other',k:155,p:5,g:22,l:5},
+{n:'Paëlla (portion)',e:'🍚',cat:'other',k:145,p:9,g:18,l:5},
+{n:'Gnocchi (portion cuits)',e:'🍝',cat:'carb',k:133,p:3,g:27,l:1},
+{n:'Raviolis (portion cuits)',e:'🍝',cat:'other',k:200,p:10,g:25,l:6},
+{n:'Tajine poulet (portion)',e:'🍲',cat:'other',k:130,p:11,g:10,l:5},
+{n:'Soupe pho (bouillon seul)',e:'🍜',cat:'other',k:20,p:2,g:1,l:0.5},
+{n:'Galette bretonne complète',e:'🥞',cat:'other',k:230,p:12,g:20,l:12},
+{n:'Crêpe au Nutella',e:'🥞',cat:'other',k:310,p:6,g:40,l:14},
+{n:'Crêpe jambon-fromage',e:'🥞',cat:'other',k:250,p:14,g:22,l:12},
+{n:'Salade niçoise (portion)',e:'🥗',cat:'other',k:130,p:8,g:6,l:8},
+{n:'Poke bowl saumon (portion)',e:'🍣',cat:'other',k:180,p:14,g:22,l:5},
+// 🍞 PAINS & FÉCULENTS SUPPLÉMENTAIRES
+{n:'Baguette tradition',e:'🥖',cat:'carb',k:272,p:9,g:52,l:2},
+{n:'Pain de campagne',e:'🍞',cat:'carb',k:258,p:8,g:49,l:2},
+{n:'Pain de seigle',e:'🍞',cat:'carb',k:259,p:8,g:48,l:2},
+{n:'Pain aux céréales',e:'🍞',cat:'carb',k:263,p:9,g:45,l:4},
+{n:'Pain d\'épices',e:'🍞',cat:'other',k:340,p:4,g:72,l:3},
+{n:'Pain pita',e:'🍞',cat:'carb',k:275,p:9,g:53,l:1.5},
+{n:'Naan (1 pièce)',e:'🍞',cat:'carb',k:290,p:9,g:48,l:7},
+{n:'Chapati',e:'🍞',cat:'carb',k:297,p:10,g:52,l:5},
+{n:'Blini (3 pièces)',e:'🍞',cat:'carb',k:230,p:7,g:35,l:7},
+{n:'Crackers (5 pièces)',e:'🍞',cat:'carb',k:450,p:9,g:65,l:17},
+{n:'Gressins (5 pièces)',e:'🍞',cat:'carb',k:415,p:12,g:68,l:11},
+{n:'Biscottes (2 pièces)',e:'🍞',cat:'carb',k:395,p:10,g:72,l:7},
+{n:'Galette de sarrasin',e:'🍞',cat:'carb',k:160,p:6,g:30,l:1.5},
+{n:'Corn flakes',e:'🥣',cat:'carb',k:378,p:7,g:84,l:1},
+{n:'Chocapic',e:'🥣',cat:'carb',k:386,p:7,g:73,l:7},
+{n:'Céréales Special K',e:'🥣',cat:'carb',k:375,p:14,g:72,l:2},
+{n:'Céréales All Bran',e:'🥣',cat:'carb',k:270,p:14,g:48,l:3.5},
+{n:'Couscous (grain cru)',e:'🍚',cat:'carb',k:376,p:13,g:77,l:1},
+{n:'Vermicelles de riz (crus)',e:'🍜',cat:'carb',k:360,p:3,g:82,l:0.5},
+{n:'Nouilles chinoises (crues)',e:'🍜',cat:'carb',k:350,p:10,g:70,l:2},
+{n:'Ebly blé (cru)',e:'🍚',cat:'carb',k:344,p:12,g:68,l:2},
+{n:'Polenta (crue)',e:'🍚',cat:'carb',k:362,p:8,g:79,l:1},
+{n:'Sarrasin (cru)',e:'🍚',cat:'carb',k:343,p:13,g:72,l:3},
+{n:'Millet (cru)',e:'🍚',cat:'carb',k:378,p:11,g:73,l:4},
+{n:'Spaghetti complètes (crues)',e:'🍝',cat:'carb',k:348,p:14,g:63,l:2.5},
+{n:'Penne (crues)',e:'🍝',cat:'carb',k:353,p:12,g:71,l:1.5},
+{n:'Fusilli (crues)',e:'🍝',cat:'carb',k:353,p:12,g:71,l:1.5},
+{n:'Riz à sushi (cru)',e:'🍚',cat:'carb',k:348,p:6.7,g:78,l:0.5},
+{n:'Riz jasmin (cru)',e:'🍚',cat:'carb',k:350,p:7,g:79,l:0.5},
+// 🥦 LÉGUMES SUPPLÉMENTAIRES
+{n:'Ail (1 gousse)',e:'🧄',cat:'veg',k:149,p:6,g:30,l:0.5},
+{n:'Échalote',e:'🧅',cat:'veg',k:72,p:2.5,g:14,l:0.1},
+{n:'Gingembre frais',e:'🫚',cat:'veg',k:80,p:1.8,g:15,l:0.8},
+{n:'Avocat (1 pièce ≈150g)',e:'🥑',cat:'fat',k:160,p:2,g:2,l:15},
+{n:'Cœur de palmier',e:'🥗',cat:'veg',k:28,p:2.5,g:3,l:0.6},
+{n:'Bambou (pousses)',e:'🥗',cat:'veg',k:27,p:2.6,g:3,l:0.3},
+{n:'Soja (germes)',e:'🥗',cat:'veg',k:30,p:3,g:2,l:0.5},
+{n:'Rhubarbe',e:'🥗',cat:'veg',k:21,p:0.9,g:2,l:0.2},
+{n:'Topinambour',e:'🥗',cat:'veg',k:73,p:2,g:14,l:0},
+{n:'Panais',e:'🥗',cat:'veg',k:75,p:1.2,g:14,l:0.3},
+{n:'Patate douce violette',e:'🍠',cat:'carb',k:90,p:1.6,g:21,l:0.1},
+{n:'Igname',e:'🍠',cat:'carb',k:118,p:1.5,g:28,l:0.2},
+{n:'Manioc',e:'🍠',cat:'carb',k:160,p:1.4,g:38,l:0.3},
+{n:'Plantain (cuit)',e:'🍌',cat:'carb',k:122,p:1,g:32,l:0.4},
+{n:'Fèves fraîches',e:'🥗',cat:'veg',k:72,p:6,g:8,l:0.6},
+{n:'Pois gourmands',e:'🥗',cat:'veg',k:42,p:3,g:5,l:0.2},
+// 🍌 FRUITS SUPPLÉMENTAIRES
+{n:'Banane plantain',e:'🍌',cat:'fruit',k:122,p:1,g:32,l:0.4},
+{n:'Kumquat',e:'🍊',cat:'fruit',k:71,p:1.9,g:10,l:0.9},
+{n:'Carambole',e:'🍎',cat:'fruit',k:31,p:1,g:4,l:0.3},
+{n:'Kaki',e:'🍎',cat:'fruit',k:70,p:0.6,g:16,l:0.2},
+{n:'Goyave',e:'🍎',cat:'fruit',k:68,p:2.6,g:9,l:1},
+{n:'Mangoustan',e:'🍎',cat:'fruit',k:73,p:0.4,g:18,l:0.6},
+{n:'Longane',e:'🍎',cat:'fruit',k:60,p:1.3,g:14,l:0.1},
+{n:'Cassis',e:'🫐',cat:'fruit',k:63,p:1.4,g:11,l:0.4},
+{n:'Groseille',e:'🫐',cat:'fruit',k:56,p:1.4,g:9,l:0.2},
+{n:'Mûre',e:'🫐',cat:'fruit',k:43,p:1.4,g:5,l:0.5},
+{n:'Framboise',e:'🫐',cat:'fruit',k:52,p:1.2,g:5,l:0.7},
+{n:'Compote pomme (sucrée)',e:'🍎',cat:'fruit',k:68,p:0.3,g:17,l:0},
+{n:'Purée de banane',e:'🍌',cat:'fruit',k:89,p:1.1,g:20,l:0.3},
+{n:'Açaï (purée non sucrée)',e:'🫐',cat:'fruit',k:70,p:0.8,g:4,l:5},
+// 🍫 SNACKS, CONFISERIES & GRIGNOTAGE
+{n:'Chips classiques',e:'🍟',cat:'other',k:536,p:6,g:52,l:33},
+{n:'Chips allégées',e:'🍟',cat:'other',k:460,p:6,g:60,l:22},
+{n:'Doritos (30g)',e:'🍟',cat:'other',k:500,p:6,g:58,l:26},
+{n:'Bretzel',e:'🥨',cat:'other',k:380,p:10,g:74,l:4},
+{n:'Pop-corn nature',e:'🍿',cat:'other',k:387,p:13,g:63,l:5},
+{n:'Pop-corn beurré',e:'🍿',cat:'other',k:535,p:9,g:50,l:31},
+{n:'Cacahuètes grillées salées',e:'🥜',cat:'fat',k:585,p:26,g:16,l:49},
+{n:'Pringles (30g)',e:'🍟',cat:'other',k:520,p:4,g:54,l:32},
+{n:'Mars (1 barre 51g)',e:'🍫',cat:'other',k:449,p:4,g:68,l:17},
+{n:'Snickers (1 barre 52g)',e:'🍫',cat:'other',k:480,p:9,g:57,l:24},
+{n:'Twix (2 barres)',e:'🍫',cat:'other',k:494,p:5,g:63,l:25},
+{n:'KitKat (4 barres)',e:'🍫',cat:'other',k:518,p:7,g:60,l:27},
+{n:'Kinder Bueno (2 barres)',e:'🍫',cat:'other',k:572,p:9,g:49,l:37},
+{n:'M&M\'s cacahuètes',e:'🍫',cat:'other',k:505,p:10,g:56,l:26},
+{n:'Bounty (1 barre)',e:'🍫',cat:'other',k:471,p:4,g:54,l:26},
+{n:'Lion (1 barre)',e:'🍫',cat:'other',k:489,p:5,g:63,l:24},
+{n:'Oreo (3 biscuits)',e:'🍪',cat:'other',k:480,p:4,g:68,l:21},
+{n:'BN chocolat (2)',e:'🍪',cat:'other',k:440,p:6,g:71,l:15},
+{n:'Prince chocolat (3)',e:'🍪',cat:'other',k:470,p:6,g:68,l:19},
+{n:'Petit beurre (4)',e:'🍪',cat:'other',k:435,p:7,g:76,l:12},
+{n:'Spéculoos (3)',e:'🍪',cat:'other',k:480,p:5,g:72,l:19},
+{n:'Madeleines (2)',e:'🍰',cat:'other',k:400,p:6,g:50,l:20},
+{n:'Pain au lait',e:'🍞',cat:'other',k:340,p:9,g:50,l:11},
+{n:'Palmier feuilleté',e:'🍪',cat:'other',k:500,p:5,g:55,l:28},
+{n:'Gaufrettes chocolat (3)',e:'🍪',cat:'other',k:510,p:6,g:60,l:27},
+{n:'Haribo (1 sachet 100g)',e:'🍬',cat:'other',k:343,p:7,g:77,l:0.5},
+{n:'Carambar (3)',e:'🍬',cat:'other',k:388,p:2,g:80,l:6},
+{n:'Réglisse',e:'🍬',cat:'other',k:313,p:4,g:68,l:2},
+{n:'Nougat',e:'🍬',cat:'other',k:400,p:5,g:68,l:12},
+{n:'Calisson (2)',e:'🍬',cat:'other',k:420,p:8,g:60,l:16},
+{n:'Loukoum (3)',e:'🍬',cat:'other',k:350,p:1,g:85,l:0.5},
+{n:'Halva',e:'🍬',cat:'other',k:469,p:12,g:52,l:25},
+{n:'Pâte à tartiner noisettes bio',e:'🍫',cat:'other',k:530,p:6,g:50,l:34},
+{n:'Sucre blanc (1 morceau 5g)',e:'🍬',cat:'other',k:400,p:0,g:100,l:0},
+{n:'Sucre roux',e:'🍬',cat:'other',k:380,p:0,g:95,l:0},
+{n:'Miel d\'acacia',e:'🍯',cat:'other',k:322,p:0.3,g:80,l:0},
+// 🥫 CONSERVES & BASIQUES CUISINE
+{n:'Thon en boîte (à l\'huile)',e:'🐟',cat:'prot',k:186,p:26,g:0,l:9},
+{n:'Sardines à l\'huile',e:'🐟',cat:'prot',k:220,p:24,g:0,l:14},
+{n:'Maquereau en boîte',e:'🐟',cat:'prot',k:200,p:23,g:0,l:12},
+{n:'Haricots blancs en boîte',e:'🥫',cat:'carb',k:80,p:5,g:13,l:0.3},
+{n:'Lentilles en boîte',e:'🥫',cat:'carb',k:90,p:7,g:12,l:0.5},
+{n:'Pois chiches en boîte',e:'🥫',cat:'carb',k:120,p:7,g:17,l:2.5},
+{n:'Maïs en boîte',e:'🌽',cat:'veg',k:77,p:2.5,g:14,l:1},
+{n:'Petits pois en boîte',e:'🥫',cat:'veg',k:58,p:4,g:8,l:0.3},
+{n:'Champignons en boîte',e:'🍄',cat:'veg',k:18,p:2,g:1,l:0.2},
+{n:'Tomates pelées en boîte',e:'🍅',cat:'veg',k:22,p:1,g:3,l:0.2},
+{n:'Concentré de tomate',e:'🍅',cat:'veg',k:82,p:4,g:14,l:0.5},
+{n:'Coulis de tomate',e:'🍅',cat:'veg',k:30,p:1.3,g:5,l:0.3},
+{n:'Cornichons',e:'🥒',cat:'veg',k:14,p:0.3,g:2,l:0.2},
+{n:'Olives à l\'apéro (10)',e:'🫒',cat:'fat',k:115,p:0.8,g:6,l:11},
+{n:'Câpres',e:'🥫',cat:'other',k:23,p:2,g:2,l:0.9},
+// 🥚 PROTÉINES VÉGÉTALES
+{n:'Seitan',e:'🥗',cat:'prot',k:370,p:75,g:4,l:2},
+{n:'Protéines de soja texturées',e:'🥗',cat:'prot',k:330,p:52,g:16,l:2},
+{n:'Tofu soyeux',e:'🥗',cat:'prot',k:55,p:5,g:2,l:3},
+{n:'Steak végétal soja',e:'🥗',cat:'prot',k:180,p:18,g:7,l:9},
+{n:'Nuggets végétaux',e:'🥗',cat:'other',k:220,p:14,g:16,l:11},
+{n:'Saucisse végétale',e:'🌭',cat:'other',k:200,p:16,g:8,l:12},
+{n:'Haché végétal',e:'🥗',cat:'prot',k:165,p:17,g:5,l:8},
+{n:'Falafel maison',e:'🧆',cat:'other',k:330,p:13,g:32,l:18},
+// 💊 COMPLÉMENTS SUPPLÉMENTAIRES
+{n:'Barre protéinée Grenade',e:'💊',cat:'suppl',k:220,p:21,g:18,l:8},
+{n:'Barre Barebells',e:'💊',cat:'suppl',k:193,p:20,g:17,l:6},
+{n:'Barre Quest',e:'💊',cat:'suppl',k:190,p:21,g:21,l:7},
+{n:'Beurre de cacahuète protéiné',e:'💊',cat:'suppl',k:370,p:30,g:15,l:23},
+{n:'Pancake protéiné (mix sec)',e:'💊',cat:'suppl',k:350,p:35,g:40,l:5},
+{n:'Gainer (dose 100g)',e:'💊',cat:'suppl',k:380,p:20,g:65,l:5},
+{n:'Maltodextrine (dose 50g)',e:'💊',cat:'suppl',k:380,p:0,g:95,l:0},
+{n:'Vitargo (dose 70g)',e:'💊',cat:'suppl',k:380,p:0,g:95,l:0},
+{n:'Collagène (dose 10g)',e:'💊',cat:'suppl',k:36,p:9,g:0,l:0},
+// 🍳 OEUFS PRÉPARÉS
+{n:'Oeuf mollet (×1)',e:'🥚',cat:'prot',k:155,p:13,g:1,l:11},
+{n:'Oeuf dur (×1)',e:'🥚',cat:'prot',k:155,p:13,g:1,l:11},
+{n:'Oeuf poché (×1)',e:'🥚',cat:'prot',k:143,p:12,g:1,l:10},
+// 🍚 ACCOMPAGNEMENTS CUITS (per 100g cuit)
+{n:'Riz blanc (cuit)',e:'🍚',cat:'carb',k:130,p:2.7,g:28,l:0.3},
+{n:'Riz complet (cuit)',e:'🍚',cat:'carb',k:123,p:2.6,g:26,l:0.9},
+{n:'Pâtes (cuites)',e:'🍝',cat:'carb',k:131,p:5,g:25,l:0.7},
+{n:'Quinoa (cuit)',e:'🍚',cat:'carb',k:120,p:4.4,g:21,l:1.9},
+{n:'Boulgour (cuit)',e:'🍚',cat:'carb',k:83,p:3,g:14,l:0.2},
+{n:'Semoule (cuite)',e:'🍚',cat:'carb',k:112,p:4,g:22,l:0.3},
+{n:'Lentilles (cuites)',e:'🥗',cat:'carb',k:116,p:9,g:15,l:0.4},
+{n:'Pois chiches (cuits)',e:'🥗',cat:'carb',k:164,p:9,g:27,l:2.6},
+{n:'Haricots rouges (cuits)',e:'🥗',cat:'carb',k:127,p:9,g:20,l:0.5},
+{n:'Purée de pommes de terre',e:'🍠',cat:'carb',k:83,p:2,g:13,l:2.5},
+{n:'Frites au four',e:'🍟',cat:'carb',k:165,p:2.5,g:25,l:6},
+{n:'Pommes de terre sautées',e:'🍠',cat:'carb',k:150,p:2.5,g:20,l:7},
+{n:'Pommes de terre vapeur',e:'🍠',cat:'carb',k:80,p:2,g:17,l:0.1},
+// 🧇 PETIT-DÉJEUNER SUPPLÉMENTAIRE
+{n:'Tartine fromage frais',e:'🍞',cat:'other',k:200,p:8,g:24,l:8},
+{n:'Tartine miel',e:'🍞',cat:'other',k:230,p:4,g:42,l:5},
+{n:'Pancake protéiné (1)',e:'🥞',cat:'other',k:160,p:14,g:15,l:4},
+{n:'French toast protéiné',e:'🍞',cat:'other',k:180,p:15,g:18,l:5},
+{n:'Smoothie bowl protéiné',e:'🫐',cat:'other',k:250,p:18,g:32,l:6},
+{n:'Bol skyr + granola',e:'🥣',cat:'other',k:190,p:15,g:25,l:4},
+{n:'Porridge protéiné',e:'🥣',cat:'other',k:200,p:18,g:25,l:4},
+// 🌮 CUISINE MEXICAINE / TEX-MEX
+{n:'Burrito poulet (1)',e:'🌯',cat:'other',k:290,p:16,g:32,l:10},
+{n:'Quesadilla (1)',e:'🌮',cat:'other',k:310,p:14,g:28,l:16},
+{n:'Nachos + guacamole (portion)',e:'🌮',cat:'other',k:350,p:7,g:38,l:19},
+{n:'Enchilada (1)',e:'🌮',cat:'other',k:230,p:12,g:22,l:10},
+{n:'Tostada (1)',e:'🌮',cat:'other',k:180,p:6,g:16,l:10},
+{n:'Chili cheese fries (portion)',e:'🍟',cat:'other',k:280,p:10,g:30,l:14},
+// 🍣 CUISINE JAPONAISE
+{n:'California roll (6)',e:'🍣',cat:'other',k:180,p:6,g:32,l:3},
+{n:'Nigiri saumon (2)',e:'🍣',cat:'other',k:140,p:10,g:16,l:4},
+{n:'Nigiri thon (2)',e:'🍣',cat:'other',k:120,p:12,g:16,l:1},
+{n:'Edamame salés (portion)',e:'🥗',cat:'other',k:122,p:11,g:8,l:5},
+{n:'Miso (1 cuillère)',e:'🥫',cat:'other',k:198,p:12,g:26,l:6},
+{n:'Wakame (salade)',e:'🥗',cat:'veg',k:45,p:3,g:6,l:0.6},
+{n:'Tofu frit (agedashi)',e:'🥗',cat:'other',k:270,p:17,g:10,l:18},
+{n:'Yakitori (3 brochettes)',e:'🍗',cat:'prot',k:160,p:22,g:4,l:6},
+{n:'Teriyaki poulet (portion)',e:'🍗',cat:'other',k:170,p:18,g:12,l:5},
+{n:'Tempura crevette (3)',e:'🦐',cat:'other',k:230,p:10,g:22,l:12},
+{n:'Onigiri (1)',e:'🍙',cat:'carb',k:180,p:5,g:36,l:1},
+// 🥙 CUISINE MÉDITERRANÉENNE / MOYEN-ORIENT
+{n:'Shawarma poulet (portion)',e:'🥙',cat:'other',k:180,p:16,g:8,l:9},
+{n:'Kafta (2 brochettes)',e:'🥩',cat:'prot',k:250,p:18,g:4,l:18},
+{n:'Labneh',e:'🥛',cat:'dairy',k:150,p:8,g:4,l:12},
+{n:'Baba ganoush',e:'🥗',cat:'fat',k:83,p:2,g:6,l:6},
+{n:'Tarama',e:'🐟',cat:'fat',k:545,p:4,g:4,l:56},
+{n:'Fattoush (salade)',e:'🥗',cat:'other',k:80,p:2,g:8,l:5},
+{n:'Manakish zaatar (1)',e:'🍞',cat:'other',k:300,p:7,g:40,l:13},
+{n:'Börek fromage (1)',e:'🥧',cat:'other',k:310,p:10,g:28,l:18},
+{n:'Moussaka (portion)',e:'🍲',cat:'other',k:145,p:8,g:10,l:8},
+{n:'Souvlaki poulet (1 brochette)',e:'🍗',cat:'prot',k:150,p:20,g:2,l:7},
+{n:'Dolma / Feuille de vigne (5)',e:'🥗',cat:'other',k:150,p:3,g:18,l:8},
+// 🍛 CUISINE INDIENNE
+{n:'Butter chicken (portion)',e:'🍛',cat:'other',k:180,p:14,g:6,l:11},
+{n:'Naan au fromage',e:'🍞',cat:'other',k:320,p:10,g:42,l:12},
+{n:'Sambar (portion)',e:'🍛',cat:'other',k:65,p:4,g:8,l:2},
+{n:'Raita',e:'🥛',cat:'other',k:55,p:3,g:3,l:3},
+{n:'Pakora légumes (5)',e:'🥗',cat:'other',k:250,p:5,g:26,l:14},
+{n:'Biryani (portion)',e:'🍚',cat:'other',k:180,p:8,g:26,l:5},
+{n:'Paneer tikka (portion)',e:'🧀',cat:'other',k:260,p:18,g:4,l:20},
+{n:'Chutney mangue (1 cuillère)',e:'🥫',cat:'other',k:250,p:0.4,g:60,l:0.3},
+// 🥗 SALADES COMPOSÉES
+{n:'Salade de pâtes (portion)',e:'🥗',cat:'other',k:160,p:5,g:22,l:6},
+{n:'Salade de riz (portion)',e:'🥗',cat:'other',k:150,p:4,g:24,l:4},
+{n:'Salade piémontaise',e:'🥗',cat:'other',k:180,p:5,g:14,l:12},
+{n:'Salade de lentilles',e:'🥗',cat:'other',k:130,p:8,g:15,l:4},
+{n:'Coleslaw',e:'🥗',cat:'other',k:135,p:1,g:10,l:10},
+{n:'Carottes râpées vinaigrette',e:'🥕',cat:'veg',k:65,p:0.8,g:7,l:4},
+{n:'Salade de fruits frais',e:'🍎',cat:'fruit',k:50,p:0.5,g:11,l:0.2},
+// 🥤 APÉRITIF
+{n:'Chips de crevette',e:'🍟',cat:'other',k:530,p:5,g:60,l:30},
+{n:'Tapenade (olives noires)',e:'🫒',cat:'fat',k:260,p:2,g:2,l:27},
+{n:'Toast saumon fumé (1)',e:'🐟',cat:'other',k:80,p:6,g:6,l:4},
+{n:'Feuilleté saucisse (1)',e:'🥧',cat:'other',k:360,p:10,g:24,l:25},
+{n:'Mini quiche (1)',e:'🥧',cat:'other',k:280,p:8,g:20,l:18},
+{n:'Gressin + coppa (2)',e:'🌭',cat:'other',k:220,p:12,g:20,l:10},
+{n:'Bruschetta tomate (1)',e:'🍞',cat:'other',k:120,p:3,g:16,l:5},
+{n:'Caviar d\'aubergine',e:'🍆',cat:'veg',k:70,p:1.5,g:4,l:5},
+{n:'Rillettes de thon',e:'🐟',cat:'prot',k:220,p:18,g:1,l:16},
+{n:'Tzatziki (portion)',e:'🥒',cat:'other',k:55,p:3,g:3,l:3.5},
+// 🍿 SNACKS SALÉS
+{n:'Cacahuètes enrobées',e:'🥜',cat:'other',k:460,p:18,g:42,l:24},
+{n:'Mix japonais (rice crackers)',e:'🍘',cat:'other',k:430,p:8,g:70,l:14},
+{n:'Noix de cajou grillées',e:'🥜',cat:'fat',k:574,p:18,g:26,l:46},
+{n:'Bretzels mini apéritif',e:'🥨',cat:'other',k:380,p:10,g:74,l:4},
+{n:'Soufflés à l\'emmental',e:'🧀',cat:'other',k:510,p:8,g:55,l:28},
+{n:'Tuiles salées',e:'🍟',cat:'other',k:530,p:5,g:50,l:34},
+{n:'Galette de riz soufflé salée',e:'🍘',cat:'carb',k:387,p:7,g:84,l:2.5},
+// 🥫 SAUCES & CONDIMENTS SUPPLÉMENTAIRES
+{n:'Sauce béchamel',e:'🥫',cat:'other',k:120,p:3.5,g:8,l:8},
+{n:'Sauce bolognaise (bocal)',e:'🥫',cat:'other',k:70,p:4,g:6,l:3},
+{n:'Sauce curry',e:'🥫',cat:'other',k:90,p:2,g:10,l:4},
+{n:'Sauce soja sucrée',e:'🥫',cat:'other',k:60,p:4,g:10,l:0},
+{n:'Sauce Worcestershire',e:'🥫',cat:'other',k:78,p:1,g:17,l:0},
+{n:'Sauce aigre-douce',e:'🥫',cat:'other',k:150,p:0.5,g:36,l:0.2},
+{n:'Sauce samurai',e:'🥫',cat:'fat',k:580,p:1,g:6,l:60},
+{n:'Sauce algérienne',e:'🥫',cat:'fat',k:550,p:0.5,g:8,l:57},
+{n:'Sauce blanche kebab',e:'🥫',cat:'fat',k:400,p:1.5,g:4,l:42},
+{n:'Harissa',e:'🌶️',cat:'other',k:70,p:3,g:8,l:3},
+{n:'Tabasco',e:'🌶️',cat:'other',k:12,p:0.5,g:1,l:0.5},
+{n:'Sauce Nuoc Mam',e:'🥫',cat:'other',k:35,p:5,g:4,l:0},
+{n:'Vinaigre de cidre',e:'🥫',cat:'other',k:21,p:0,g:0.9,l:0},
+{n:'Crème de vinaigre balsamique',e:'🥫',cat:'other',k:170,p:0.5,g:40,l:0},
+{n:'Sauce Pad Thaï',e:'🥫',cat:'other',k:200,p:3,g:42,l:2},
+{n:'Pâte de curry rouge',e:'🌶️',cat:'other',k:115,p:3,g:8,l:8},
+// 🧈 BEURRES & MARGARINES
+{n:'Beurre demi-sel',e:'🧈',cat:'fat',k:717,p:0.9,g:0,l:81},
+{n:'Beurre doux allégé',e:'🧈',cat:'fat',k:400,p:0.5,g:0,l:41},
+{n:'Margarine',e:'🧈',cat:'fat',k:717,p:0,g:0,l:80},
+{n:'Ghee',e:'🧈',cat:'fat',k:900,p:0,g:0,l:100},
+// 🍕 FAST-FOOD SUPPLÉMENTAIRE
+{n:'Whopper (Burger King)',e:'🍔',cat:'other',k:230,p:12,g:17,l:13},
+{n:'Royal Deluxe',e:'🍔',cat:'other',k:245,p:13,g:19,l:13},
+{n:'Filet-O-Fish',e:'🐟',cat:'other',k:240,p:11,g:24,l:11},
+{n:'Wrap McWrap',e:'🌯',cat:'other',k:200,p:12,g:20,l:8},
+{n:'Salade McDonald\'s',e:'🥗',cat:'other',k:80,p:5,g:5,l:4},
+{n:'Sundae chocolat',e:'🍦',cat:'other',k:190,p:4,g:30,l:6},
+{n:'Hot dog',e:'🌭',cat:'other',k:290,p:10,g:24,l:17},
+{n:'Panini jambon-fromage',e:'🥖',cat:'other',k:260,p:14,g:26,l:11},
+{n:'Sandwich jambon-beurre',e:'🥖',cat:'other',k:250,p:12,g:28,l:10},
+{n:'Sandwich poulet crudités',e:'🥖',cat:'other',k:210,p:14,g:24,l:6},
+{n:'Sandwich thon mayo',e:'🥖',cat:'other',k:260,p:13,g:25,l:12},
+{n:'Club sandwich',e:'🥪',cat:'other',k:240,p:15,g:20,l:11},
+{n:'Croque-madame',e:'🍳',cat:'other',k:320,p:17,g:24,l:17},
+{n:'Galette saucisse',e:'🌭',cat:'other',k:270,p:10,g:22,l:15},
+{n:'Jambon-beurre (demi-baguette)',e:'🥖',cat:'other',k:450,p:18,g:48,l:18},
+// 🥘 CUISINE AFRICAINE / ANTILLAISE
+{n:'Poulet yassa (portion)',e:'🍗',cat:'other',k:140,p:15,g:6,l:6},
+{n:'Thiéboudienne (portion)',e:'🐟',cat:'other',k:170,p:10,g:22,l:5},
+{n:'Mafé (portion)',e:'🍲',cat:'other',k:180,p:12,g:10,l:10},
+{n:'Attiéké (portion)',e:'🍚',cat:'carb',k:145,p:1,g:35,l:0.2},
+{n:'Accras de morue (5)',e:'🐟',cat:'other',k:280,p:10,g:22,l:17},
+{n:'Colombo poulet (portion)',e:'🍛',cat:'other',k:150,p:14,g:8,l:7},
+{n:'Gratin de christophine',e:'🥗',cat:'other',k:110,p:5,g:8,l:6},
+{n:'Boudin antillais (1)',e:'🌭',cat:'prot',k:240,p:12,g:5,l:19},
+// 🧊 GLACES & DESSERTS GLACÉS
+{n:'Magnum Classic (1)',e:'🍦',cat:'other',k:260,p:4,g:26,l:16},
+{n:'Cornetto (1)',e:'🍦',cat:'other',k:220,p:3,g:28,l:11},
+{n:'Bâtonnet glacé fruit (1)',e:'🍦',cat:'other',k:80,p:0.3,g:18,l:0.5},
+{n:'Ben & Jerry\'s Cookie Dough (100ml)',e:'🍦',cat:'other',k:270,p:4,g:32,l:14},
+{n:'Glace au chocolat (boule)',e:'🍦',cat:'other',k:216,p:4,g:24,l:12},
+{n:'Frozen yogurt (100g)',e:'🍦',cat:'other',k:130,p:4,g:22,l:3},
+{n:'Viennetta (1 part)',e:'🍦',cat:'other',k:250,p:3,g:25,l:15},
+{n:'Mochi glacé (1)',e:'🍡',cat:'other',k:100,p:1.5,g:18,l:2.5},
+// ═══ EXTENSION 2 — VARIANTES & COMPLÉMENTS (→ 1000 aliments) ═══
+
+// 🍗 POULET — VARIANTES
+{n:'Poulet frit (type KFC)',e:'🍗',cat:'prot',k:260,p:20,g:10,l:16},
+{n:'Poulet grillé (cuisse)',e:'🍗',cat:'prot',k:220,p:25,g:0,l:13},
+{n:'Poulet grillé (filet)',e:'🍗',cat:'prot',k:165,p:31,g:0,l:3.6},
+{n:'Poulet pané',e:'🍗',cat:'other',k:240,p:18,g:14,l:12},
+{n:'Ailes de poulet (buffalo)',e:'🍗',cat:'other',k:250,p:19,g:5,l:17},
+{n:'Ailes de poulet nature',e:'🍗',cat:'prot',k:203,p:18,g:0,l:14},
+{n:'Pilon de poulet (cuit)',e:'🍗',cat:'prot',k:215,p:24,g:0,l:13},
+{n:'Escalope de poulet panée',e:'🍗',cat:'other',k:235,p:19,g:12,l:13},
+{n:'Brochette de poulet marinée',e:'🍗',cat:'prot',k:175,p:28,g:3,l:5},
+{n:'Poulet tandoori',e:'🍗',cat:'prot',k:170,p:27,g:3,l:5},
+{n:'Poulet tikka',e:'🍗',cat:'prot',k:175,p:26,g:4,l:6},
+{n:'Poulet au curry (portion)',e:'🍛',cat:'other',k:160,p:14,g:5,l:9},
+{n:'Poulet basquaise (portion)',e:'🍲',cat:'other',k:130,p:13,g:6,l:5},
+{n:'Poulet au citron (portion)',e:'🍗',cat:'other',k:145,p:16,g:5,l:6},
+{n:'Poulet teriyaki',e:'🍗',cat:'other',k:175,p:22,g:10,l:5},
+{n:'Émincé de poulet (wok)',e:'🍗',cat:'prot',k:155,p:28,g:2,l:4},
+// 🥩 BOEUF — VARIANTES
+{n:'Steak haché cuit 5%',e:'🥩',cat:'prot',k:165,p:28,g:0,l:5.5},
+{n:'Steak haché cuit 15%',e:'🥩',cat:'prot',k:250,p:26,g:0,l:16},
+{n:'Steak haché cuit 20%',e:'🥩',cat:'prot',k:280,p:24,g:0,l:20},
+{n:'Bavette grillée',e:'🥩',cat:'prot',k:195,p:27,g:0,l:9},
+{n:'Entrecôte grillée',e:'🥩',cat:'prot',k:260,p:26,g:0,l:17},
+{n:'Faux-filet grillé',e:'🥩',cat:'prot',k:210,p:28,g:0,l:11},
+{n:'Onglet grillé',e:'🥩',cat:'prot',k:185,p:28,g:0,l:8},
+{n:'Rumsteck grillé',e:'🥩',cat:'prot',k:175,p:29,g:0,l:6},
+{n:'Boeuf séché (Bresaola)',e:'🥩',cat:'prot',k:151,p:32,g:0,l:2.6},
+{n:'Boeuf bourguignon (viande)',e:'🥩',cat:'prot',k:180,p:22,g:2,l:9},
+{n:'Carpaccio de boeuf',e:'🥩',cat:'prot',k:130,p:22,g:0,l:5},
+{n:'Tartare de boeuf',e:'🥩',cat:'prot',k:155,p:21,g:0,l:8},
+{n:'Rosbif',e:'🥩',cat:'prot',k:175,p:28,g:0,l:7},
+{n:'Boeuf stroganoff (portion)',e:'🍲',cat:'other',k:170,p:14,g:5,l:10},
+// 🐖 PORC — VARIANTES
+{n:'Côte de porc grillée',e:'🥩',cat:'prot',k:250,p:24,g:0,l:17},
+{n:'Échine de porc rôtie',e:'🥩',cat:'prot',k:240,p:22,g:0,l:16},
+{n:'Rôti de porc cuit',e:'🥩',cat:'prot',k:185,p:27,g:0,l:8},
+{n:'Travers de porc (ribs)',e:'🥩',cat:'prot',k:280,p:20,g:0,l:22},
+{n:'Porc au caramel (vietnamien)',e:'🥩',cat:'other',k:195,p:18,g:10,l:9},
+{n:'Porc laqué (char siu)',e:'🥩',cat:'other',k:220,p:22,g:14,l:8},
+{n:'Pulled pork (portion)',e:'🥩',cat:'prot',k:210,p:23,g:5,l:11},
+{n:'Filet mignon de porc',e:'🥩',cat:'prot',k:143,p:26,g:0,l:4},
+// 🌭 SAUCISSES — VARIANTES
+{n:'Chipolata',e:'🌭',cat:'prot',k:280,p:14,g:1,l:24},
+{n:'Chipolata de volaille',e:'🌭',cat:'prot',k:200,p:16,g:1,l:15},
+{n:'Merguez grillée',e:'🌭',cat:'prot',k:280,p:15,g:1,l:24},
+{n:'Saucisse de Toulouse',e:'🌭',cat:'prot',k:310,p:15,g:1,l:27},
+{n:'Saucisse de Morteau',e:'🌭',cat:'prot',k:330,p:17,g:1,l:28},
+{n:'Saucisse de Montbéliard',e:'🌭',cat:'prot',k:310,p:16,g:1,l:27},
+{n:'Saucisse de Francfort',e:'🌭',cat:'prot',k:290,p:12,g:2,l:26},
+{n:'Saucisse fumée (knack)',e:'🌭',cat:'prot',k:275,p:12,g:2,l:24},
+{n:'Saucisse sèche (1 tranche)',e:'🌭',cat:'prot',k:410,p:27,g:1,l:33},
+{n:'Cervelas',e:'🌭',cat:'prot',k:295,p:13,g:2,l:26},
+{n:'Saucisse végétale grillée',e:'🌭',cat:'other',k:195,p:15,g:7,l:12},
+{n:'Saucisse de volaille',e:'🌭',cat:'prot',k:210,p:16,g:2,l:15},
+// 🥚 OEUFS — VARIANTES
+{n:'Omelette fromage (2 oeufs)',e:'🍳',cat:'prot',k:250,p:17,g:1,l:19},
+{n:'Omelette jambon (2 oeufs)',e:'🍳',cat:'prot',k:220,p:18,g:1,l:16},
+{n:'Omelette champignons',e:'🍳',cat:'prot',k:185,p:14,g:2,l:14},
+{n:'Oeuf cocotte',e:'🥚',cat:'prot',k:170,p:12,g:1,l:13},
+{n:'Shakshuka (portion)',e:'🍳',cat:'other',k:140,p:9,g:8,l:8},
+{n:'Oeuf bénédicte (1)',e:'🍳',cat:'other',k:290,p:14,g:18,l:18},
+{n:'Tortilla espagnole (1 part)',e:'🍳',cat:'other',k:165,p:6,g:14,l:9},
+// 🐟 POISSONS — VARIANTES
+{n:'Saumon grillé',e:'🐟',cat:'prot',k:208,p:25,g:0,l:12},
+{n:'Saumon en papillote',e:'🐟',cat:'prot',k:190,p:24,g:0,l:10},
+{n:'Saumon poêlé beurre',e:'🐟',cat:'prot',k:235,p:24,g:0,l:15},
+{n:'Pavé de saumon teriyaki',e:'🐟',cat:'other',k:220,p:23,g:6,l:11},
+{n:'Cabillaud au four',e:'🐟',cat:'prot',k:100,p:22,g:0,l:1},
+{n:'Cabillaud pané frit',e:'🐟',cat:'other',k:210,p:14,g:16,l:10},
+{n:'Filet de merlan',e:'🐟',cat:'prot',k:90,p:19,g:0,l:1.2},
+{n:'Filet de tilapia',e:'🐟',cat:'prot',k:96,p:20,g:0,l:1.7},
+{n:'Filet de perche',e:'🐟',cat:'prot',k:91,p:19,g:0,l:1},
+{n:'Poisson blanc au four',e:'🐟',cat:'prot',k:95,p:20,g:0,l:1.5},
+{n:'Brandade (portion)',e:'🐟',cat:'other',k:145,p:8,g:11,l:8},
+{n:'Fish burger',e:'🐟',cat:'other',k:250,p:12,g:26,l:11},
+{n:'Crevettes sautées ail',e:'🦐',cat:'prot',k:120,p:20,g:2,l:3.5},
+{n:'Crevettes panées frites',e:'🦐',cat:'other',k:240,p:14,g:18,l:13},
+{n:'Gambas grillées',e:'🦐',cat:'prot',k:105,p:22,g:0,l:1.5},
+// 🍠 POMMES DE TERRE — VARIANTES
+{n:'Pommes de terre au four',e:'🍠',cat:'carb',k:93,p:2,g:21,l:0.1},
+{n:'Gratin de pommes de terre',e:'🍠',cat:'other',k:145,p:4,g:14,l:8},
+{n:'Pommes de terre rissolées',e:'🍠',cat:'other',k:180,p:2.5,g:22,l:9},
+{n:'Rösti (galette patate)',e:'🍠',cat:'other',k:175,p:2,g:20,l:10},
+{n:'Pommes noisettes (surgelées)',e:'🍠',cat:'carb',k:210,p:3,g:28,l:10},
+{n:'Gnocchi poêlés',e:'🍝',cat:'other',k:185,p:4,g:28,l:6},
+{n:'Purée maison (beurre + lait)',e:'🍠',cat:'carb',k:100,p:2,g:14,l:4},
+{n:'Écrasée de pommes de terre',e:'🍠',cat:'carb',k:95,p:2,g:14,l:3},
+{n:'Potatoes (quartiers au four)',e:'🍠',cat:'carb',k:155,p:2.5,g:22,l:6},
+{n:'Patate douce frite',e:'🍠',cat:'carb',k:170,p:1.5,g:26,l:7},
+{n:'Patate douce au four',e:'🍠',cat:'carb',k:90,p:1.6,g:21,l:0.1},
+// 🍝 PÂTES — VARIANTES CUITES
+{n:'Pâtes au pesto (portion)',e:'🍝',cat:'other',k:180,p:6,g:24,l:7},
+{n:'Pâtes au beurre (portion)',e:'🍝',cat:'other',k:160,p:5,g:25,l:5},
+{n:'Pâtes au saumon (portion)',e:'🍝',cat:'other',k:175,p:10,g:22,l:6},
+{n:'Pâtes aux légumes',e:'🍝',cat:'other',k:140,p:5,g:22,l:3},
+{n:'Mac & Cheese (portion)',e:'🍝',cat:'other',k:260,p:10,g:26,l:13},
+{n:'Spaghetti aglio olio',e:'🍝',cat:'other',k:195,p:5,g:25,l:9},
+{n:'Coquillettes jambon',e:'🍝',cat:'other',k:155,p:8,g:22,l:4},
+{n:'Tagliatelles fraîches (crues)',e:'🍝',cat:'carb',k:288,p:10,g:46,l:6},
+// 🍚 RIZ — VARIANTES CUITES
+{n:'Riz pilaf (cuit)',e:'🍚',cat:'carb',k:145,p:3,g:26,l:3},
+{n:'Riz sauté aux légumes',e:'🍚',cat:'other',k:155,p:4,g:24,l:5},
+{n:'Riz au lait (portion)',e:'🍮',cat:'other',k:130,p:4,g:20,l:3.5},
+{n:'Riz gluant (cuit)',e:'🍚',cat:'carb',k:116,p:2,g:25,l:0.2},
+{n:'Riz vinaigré sushi (cuit)',e:'🍚',cat:'carb',k:145,p:2.5,g:32,l:0.3},
+// 🥗 SALADES & CRUDITÉS — VARIANTES
+{n:'Salade tomates mozzarella',e:'🥗',cat:'other',k:140,p:8,g:4,l:10},
+{n:'Salade grecque (portion)',e:'🥗',cat:'other',k:120,p:5,g:5,l:9},
+{n:'Salade chèvre chaud',e:'🥗',cat:'other',k:180,p:10,g:8,l:12},
+{n:'Salade de quinoa',e:'🥗',cat:'other',k:140,p:5,g:18,l:5},
+{n:'Salade de boulgour',e:'🥗',cat:'other',k:135,p:4,g:20,l:4},
+{n:'Buddha bowl (portion)',e:'🥗',cat:'other',k:200,p:10,g:26,l:7},
+{n:'Salade landaise',e:'🥗',cat:'other',k:190,p:12,g:5,l:14},
+{n:'Salade thaï (portion)',e:'🥗',cat:'other',k:120,p:8,g:10,l:5},
+// 🍞 SANDWICHS — VARIANTES
+{n:'Sandwich poulet mayo',e:'🥪',cat:'other',k:270,p:15,g:26,l:12},
+{n:'Sandwich kebab (pita)',e:'🥙',cat:'other',k:280,p:16,g:28,l:12},
+{n:'Wrap poulet Caesar',e:'🌯',cat:'other',k:260,p:15,g:26,l:11},
+{n:'Wrap végétarien',e:'🌯',cat:'other',k:220,p:8,g:30,l:8},
+{n:'Bagel saumon cream cheese',e:'🥯',cat:'other',k:310,p:16,g:34,l:12},
+{n:'Bagel nature (1)',e:'🥯',cat:'carb',k:270,p:10,g:50,l:2},
+{n:'Focaccia (portion)',e:'🍞',cat:'carb',k:280,p:8,g:40,l:10},
+{n:'Panini poulet (1)',e:'🥖',cat:'other',k:270,p:16,g:28,l:10},
+{n:'Ciabatta (1)',e:'🍞',cat:'carb',k:265,p:9,g:48,l:3.5},
+// 🍕 PIZZA — VARIANTES
+{n:'Pizza 4 fromages (1 part)',e:'🍕',cat:'other',k:300,p:14,g:28,l:15},
+{n:'Pizza pepperoni (1 part)',e:'🍕',cat:'other',k:280,p:12,g:30,l:12},
+{n:'Pizza reine (1 part)',e:'🍕',cat:'other',k:250,p:13,g:28,l:10},
+{n:'Pizza calzone (1/2)',e:'🍕',cat:'other',k:270,p:13,g:30,l:11},
+{n:'Pizza chèvre miel (1 part)',e:'🍕',cat:'other',k:275,p:11,g:32,l:12},
+{n:'Pizza saumon (1 part)',e:'🍕',cat:'other',k:260,p:13,g:28,l:11},
+// 🍔 BURGERS — VARIANTES
+{n:'Burger bacon',e:'🍔',cat:'other',k:310,p:18,g:22,l:17},
+{n:'Burger poulet',e:'🍔',cat:'other',k:250,p:15,g:26,l:10},
+{n:'Burger veggie',e:'🍔',cat:'other',k:230,p:10,g:30,l:8},
+{n:'Burger raclette',e:'🍔',cat:'other',k:330,p:17,g:24,l:18},
+{n:'Burger fish',e:'🍔',cat:'other',k:270,p:13,g:28,l:12},
+{n:'Smash burger (2 steaks)',e:'🍔',cat:'other',k:320,p:20,g:22,l:18},
+// 🌭 KEBAB — VARIANTES
+{n:'Kebab viande (assiette)',e:'🥙',cat:'other',k:180,p:16,g:4,l:11},
+{n:'Kebab frites (barquette)',e:'🥙',cat:'other',k:220,p:12,g:22,l:11},
+{n:'Durum / Wrap kebab',e:'🌯',cat:'other',k:260,p:15,g:25,l:12},
+{n:'Assiette kebab + riz',e:'🥙',cat:'other',k:200,p:14,g:20,l:8},
+// 🍟 FRITES — VARIANTES
+{n:'Frites fraîches (fritées)',e:'🍟',cat:'other',k:312,p:3.4,g:38,l:15},
+{n:'Frites surgelées (four)',e:'🍟',cat:'carb',k:170,p:2.5,g:26,l:6},
+{n:'Frites de patate douce',e:'🍟',cat:'other',k:180,p:1.5,g:28,l:7},
+{n:'Frites de courgette panées',e:'🍟',cat:'other',k:190,p:4,g:18,l:11},
+{n:'Potatoes épicées',e:'🍟',cat:'other',k:165,p:2.5,g:22,l:7},
+{n:'Onion rings (6)',e:'🍟',cat:'other',k:330,p:4,g:38,l:18},
+// 🥘 SOUPES — VARIANTES
+{n:'Soupe à l\'oignon',e:'🍲',cat:'veg',k:40,p:1.5,g:5,l:1.5},
+{n:'Soupe poireaux pommes de terre',e:'🍲',cat:'veg',k:45,p:1,g:7,l:1.5},
+{n:'Velouté potiron',e:'🍲',cat:'veg',k:38,p:0.8,g:5,l:1.5},
+{n:'Velouté champignons',e:'🍲',cat:'veg',k:50,p:1.5,g:4,l:3},
+{n:'Soupe minestrone',e:'🍲',cat:'veg',k:45,p:2,g:6,l:1.5},
+{n:'Bisque de homard',e:'🍲',cat:'other',k:60,p:4,g:4,l:3},
+{n:'Gaspacho',e:'🍲',cat:'veg',k:30,p:0.7,g:4,l:1.2},
+{n:'Bouillon de légumes',e:'🍲',cat:'veg',k:8,p:0.3,g:1,l:0.2},
+{n:'Bouillon de poule',e:'🍲',cat:'other',k:15,p:1.5,g:0.5,l:0.5},
+// 🫕 PLATS MAISON — VARIANTES
+{n:'Gratin de courgettes',e:'🥗',cat:'other',k:95,p:5,g:5,l:6},
+{n:'Gratin de pâtes',e:'🍝',cat:'other',k:180,p:8,g:20,l:8},
+{n:'Gratin de chou-fleur',e:'🥦',cat:'other',k:100,p:5,g:5,l:6},
+{n:'Endives au jambon (2)',e:'🥬',cat:'other',k:130,p:10,g:3,l:8},
+{n:'Poêlée de légumes',e:'🥦',cat:'veg',k:55,p:2,g:6,l:2.5},
+{n:'Wok de légumes',e:'🥦',cat:'veg',k:65,p:2.5,g:7,l:3},
+{n:'Wok poulet nouilles',e:'🍜',cat:'other',k:155,p:12,g:18,l:4},
+{n:'Wok boeuf brocoli',e:'🍜',cat:'other',k:140,p:13,g:8,l:6},
+{n:'Wok crevettes (portion)',e:'🍜',cat:'other',k:130,p:14,g:12,l:3},
+{n:'Tomates farcies (2)',e:'🍅',cat:'other',k:120,p:8,g:8,l:6},
+{n:'Courgettes farcies (2)',e:'🥗',cat:'other',k:110,p:7,g:7,l:6},
+{n:'Poivrons farcis (2)',e:'🫑',cat:'other',k:125,p:8,g:8,l:7},
+{n:'Cannelloni (portion)',e:'🍝',cat:'other',k:175,p:9,g:18,l:7},
+{n:'Crêpe au fromage',e:'🥞',cat:'other',k:230,p:10,g:22,l:11},
+{n:'Soufflé au fromage',e:'🧀',cat:'other',k:210,p:10,g:8,l:15},
+{n:'Fondue savoyarde (portion)',e:'🧀',cat:'other',k:290,p:17,g:3,l:22},
+{n:'Raclette (portion fromage)',e:'🧀',cat:'dairy',k:357,p:23,g:0.5,l:29},
+{n:'Tartiflette (portion)',e:'🍠',cat:'other',k:190,p:9,g:12,l:12},
+// 🐟 CONSERVES — VARIANTES
+{n:'Thon en boîte (au naturel)',e:'🐟',cat:'prot',k:116,p:26,g:0,l:1},
+{n:'Sardines tomate',e:'🐟',cat:'prot',k:185,p:20,g:3,l:10},
+{n:'Sardines citron',e:'🐟',cat:'prot',k:195,p:22,g:1,l:11},
+{n:'Maquereau moutarde',e:'🐟',cat:'prot',k:195,p:20,g:3,l:11},
+{n:'Thon mayo (rillettes)',e:'🐟',cat:'other',k:240,p:14,g:2,l:20},
+// 🥛 BOISSONS PROTÉINÉES
+{n:'Shake whey + lait (300ml)',e:'💊',cat:'suppl',k:240,p:32,g:15,l:6},
+{n:'Shake whey + eau (300ml)',e:'💊',cat:'suppl',k:120,p:24,g:2,l:1.5},
+{n:'Shake caséine (300ml eau)',e:'💊',cat:'suppl',k:115,p:23,g:3,l:1},
+{n:'YOP (250ml)',e:'🥛',cat:'dairy',k:178,p:5,g:30,l:4},
+{n:'Actimel (100ml)',e:'🥛',cat:'dairy',k:72,p:3,g:11,l:1.5},
+{n:'Danacol (100ml)',e:'🥛',cat:'dairy',k:38,p:3,g:5,l:0.5},
+// 🍌 FRUITS — VARIANTES PRÉPARÉES
+{n:'Banane séchée (chips)',e:'🍌',cat:'fruit',k:519,p:2.2,g:58,l:33},
+{n:'Mangue séchée',e:'🍎',cat:'fruit',k:319,p:2.4,g:73,l:0.9},
+{n:'Ananas séché',e:'🍎',cat:'fruit',k:340,p:1.5,g:82,l:0.6},
+{n:'Pomme séchée',e:'🍎',cat:'fruit',k:243,p:0.9,g:57,l:0.3},
+{n:'Noix de coco fraîche',e:'🥥',cat:'fruit',k:354,p:3.3,g:6,l:33},
+{n:'Confiture d\'abricot',e:'🍯',cat:'other',k:250,p:0.4,g:60,l:0},
+{n:'Marmelade d\'orange',e:'🍯',cat:'other',k:240,p:0.3,g:59,l:0},
+{n:'Compote pomme-banane',e:'🍎',cat:'fruit',k:60,p:0.3,g:14,l:0.1},
+{n:'Compote pomme-poire',e:'🍎',cat:'fruit',k:55,p:0.3,g:13,l:0.1},
+// 🥜 SNACKS PROTÉINÉS
+{n:'Beef jerky',e:'🥩',cat:'prot',k:310,p:52,g:11,l:5},
+{n:'Biltong',e:'🥩',cat:'prot',k:250,p:56,g:1,l:3},
+{n:'Thon snacking (sachet)',e:'🐟',cat:'prot',k:110,p:24,g:1,l:1},
+{n:'Fromage à effilocher',e:'🧀',cat:'dairy',k:330,p:28,g:1,l:24},
+{n:'Oeuf dur snacking (1)',e:'🥚',cat:'prot',k:155,p:13,g:1,l:11},
+// 🍰 PÂTISSERIES — VARIANTES
+{n:'Tarte framboise (1 part)',e:'🥧',cat:'other',k:280,p:3.5,g:34,l:14},
+{n:'Tarte chocolat (1 part)',e:'🥧',cat:'other',k:370,p:5,g:38,l:22},
+{n:'Paris-Brest (1 part)',e:'🍰',cat:'other',k:380,p:7,g:30,l:26},
+{n:'Opéra (1 part)',e:'🍰',cat:'other',k:360,p:5,g:35,l:22},
+{n:'Forêt noire (1 part)',e:'🍰',cat:'other',k:290,p:4,g:32,l:16},
+{n:'Baba au rhum',e:'🍰',cat:'other',k:260,p:4,g:38,l:10},
+{n:'Cannelé (1)',e:'🍰',cat:'other',k:290,p:5,g:42,l:11},
+{n:'Kouign-amann (1 part)',e:'🍰',cat:'other',k:430,p:5,g:48,l:25},
+{n:'Crumble aux pommes (portion)',e:'🥧',cat:'other',k:280,p:3,g:38,l:13},
+{n:'Far breton (1 part)',e:'🍰',cat:'other',k:230,p:5,g:34,l:8},
+{n:'Galette des rois (1 part)',e:'🥧',cat:'other',k:395,p:7,g:38,l:24},
+// 🥣 CÉRÉALES — VARIANTES
+{n:'Muesli croustillant',e:'🥣',cat:'carb',k:450,p:8,g:62,l:18},
+{n:'Granola protéiné',e:'🥣',cat:'carb',k:400,p:18,g:48,l:14},
+{n:'Porridge banane-cacao (cuit)',e:'🥣',cat:'other',k:150,p:5,g:24,l:4},
+{n:'Weetabix (2)',e:'🥣',cat:'carb',k:362,p:12,g:68,l:2},
+{n:'Cheerios',e:'🥣',cat:'carb',k:374,p:8,g:74,l:5},
+// 🌮 STREET FOOD
+{n:'Crêpe complète (oeuf+jambon+fromage)',e:'🥞',cat:'other',k:260,p:15,g:22,l:13},
+{n:'Galette saucisse moutarde',e:'🌭',cat:'other',k:280,p:11,g:24,l:16},
+{n:'Poutine (portion)',e:'🍟',cat:'other',k:250,p:10,g:28,l:11},
+{n:'Churros (3)',e:'🍩',cat:'other',k:380,p:4,g:44,l:21},
+{n:'Beignet pomme (1)',e:'🍩',cat:'other',k:350,p:4,g:45,l:17},
+{n:'Pain bagnat (1)',e:'🥖',cat:'other',k:220,p:10,g:22,l:10},
+{n:'Pan con tomate',e:'🍞',cat:'other',k:170,p:4,g:24,l:6},
+{n:'Empanada (1)',e:'🥟',cat:'other',k:280,p:8,g:26,l:16},
+{n:'Arancini (2)',e:'🍚',cat:'other',k:260,p:7,g:30,l:12},
+{n:'Croquetas jambon (3)',e:'🥟',cat:'other',k:280,p:9,g:22,l:17},
+{n:'Gözleme fromage (1)',e:'🥞',cat:'other',k:260,p:10,g:30,l:11},
+{n:'Arepa (1)',e:'🌽',cat:'carb',k:180,p:4,g:30,l:5},
+{n:'Taco al pastor (1)',e:'🌮',cat:'other',k:180,p:10,g:16,l:8},
+// 🥗 DERNIERS AJOUTS
+{n:'Lardons fumés',e:'🥓',cat:'prot',k:270,p:15,g:0,l:23},
+{n:'Lardons nature',e:'🥓',cat:'prot',k:250,p:16,g:0,l:21},
+{n:'Dinde fumée en tranche',e:'🍗',cat:'prot',k:108,p:22,g:1,l:2},
+{n:'Jambon de Bayonne',e:'🌭',cat:'prot',k:230,p:28,g:0,l:13},
+{n:'Viande des grisons',e:'🥩',cat:'prot',k:148,p:33,g:0,l:2},
+{n:'Jambon de Parme',e:'🌭',cat:'prot',k:240,p:26,g:0,l:15},
+{n:'Speck',e:'🌭',cat:'prot',k:300,p:28,g:0,l:21},
+{n:'Pancetta',e:'🥓',cat:'prot',k:390,p:14,g:0,l:37},
+{n:'Guanciale',e:'🥓',cat:'prot',k:540,p:8,g:0,l:56},
+{n:'Sucre glace',e:'🍬',cat:'other',k:389,p:0,g:97,l:0},
+{n:'Cacao en poudre non sucré',e:'🍫',cat:'other',k:228,p:20,g:12,l:14},
+{n:'Poudre de coco',e:'🥥',cat:'fat',k:660,p:7,g:6,l:62},
+{n:'Farine de coco',e:'🥥',cat:'other',k:370,p:18,g:25,l:14},
+{n:'Levure nutritionnelle',e:'🥗',cat:'other',k:325,p:45,g:24,l:5},
+{n:'Sauce hoisin',e:'🥫',cat:'other',k:220,p:3,g:44,l:4},
+{n:'Pâte miso',e:'🥫',cat:'other',k:198,p:12,g:26,l:6},
+{n:'Lait ribot / Babeurre',e:'🥛',cat:'dairy',k:40,p:3.3,g:5,l:0.9},
+{n:'Graines de pavot',e:'🥜',cat:'fat',k:525,p:18,g:8,l:42}
 ];
 let _selFood=null;
 
@@ -2552,6 +3310,7 @@ function saveMealPreset(mi) {
   if(mn.includes('petit')||mn.includes('breakfast'))autoCat='pdej';
   else if(mn.includes('déjeuner')||mn.includes('lunch'))autoCat='dej';
   else if(mn.includes('dîner')||mn.includes('dinner'))autoCat='diner';
+  else if(mn.includes('cheat')||mn.includes('triche'))autoCat='cheat';
   else if(mn.includes('shaker'))autoCat='collation';
   document.getElementById('presetCatSel').value=autoCat;
   
@@ -2679,18 +3438,25 @@ function addFoodToPreset(foodIdx){
   p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
   p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
   p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
+  L.s('mealPresets',mealPresets);
   document.getElementById('epAddFoodQ').value='';
   document.getElementById('epAddFoodRes').innerHTML='';
   renderPresetItems();
-  toast(f.e+' '+f.n+' ajouté','success',1500);
+  toast(f.e+' '+f.n+' ajouté · Clique ✏️ pour modifier','success',2000);
 }
 
 function confirmEditPreset(){
   if(_editPresetIdx===null)return;
   const name=document.getElementById('epNameInp').value.trim();
   if(!name)return toast('Nom requis','warn');
-  mealPresets[_editPresetIdx].name=name;
-  mealPresets[_editPresetIdx].category=document.getElementById('epCatSel').value||'collation';
+  const p=mealPresets[_editPresetIdx];
+  p.name=name;
+  p.category=document.getElementById('epCatSel').value||'collation';
+  // Recalculate totals to ensure consistency
+  p.totalKcal=p.items.reduce((s,i)=>s+(i.kcal||0),0);
+  p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
+  p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
+  p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
   L.s('mealPresets',mealPresets);
   document.getElementById('editPresetMd').classList.add('hid');
   _editPresetIdx=null;
@@ -2704,7 +3470,7 @@ function renderPresetItems(){
   if(!p)return;
   const el=document.getElementById('epItemsList');
   el.innerHTML=p.items.map((it,ii)=>
-    '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--bd)">'+
+    '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--bd)" id="epRow_'+ii+'">'+
     '<span style="font-size:14px">'+(it.emoji||'🍽')+'</span>'+
     '<div style="flex:1;min-width:0">'+
       '<div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+it.name+(it.grams?' <span style="color:var(--dim)">'+it.grams+'g</span>':'')+'</div>'+
@@ -2727,6 +3493,7 @@ function removePresetItem(ii){
   p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
   p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
   p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
+  L.s('mealPresets',mealPresets);
   renderPresetItems();
 }
 
@@ -2735,47 +3502,60 @@ function editPresetItem(ii){
   const p=mealPresets[_editPresetIdx];
   if(!p||!p.items[ii])return;
   const it=p.items[ii];
-  const el=document.getElementById('epItemsList');
-  // Replace item row with inline editor
-  const rows=el.children;
-  if(!rows[ii])return;
-  rows[ii].innerHTML=
-    '<div style="width:100%;padding:8px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs)">'+
-    '<div style="font-size:11px;font-weight:600;margin-bottom:6px">'+(it.emoji||'🍽')+' '+it.name+'</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:4px">'+
-      '<div><div style="font-size:7px;color:var(--dim)">G</div><input class="inp" type="number" id="epi_g" value="'+(it.grams||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
-      '<div><div style="font-size:7px;color:var(--dim)">KCAL</div><input class="inp" type="number" id="epi_k" value="'+(it.kcal||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
-      '<div><div style="font-size:7px;color:var(--dim)">P</div><input class="inp" type="number" id="epi_p" value="'+(it.prot||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
-      '<div><div style="font-size:7px;color:var(--dim)">G</div><input class="inp" type="number" id="epi_c" value="'+(it.carbs||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
-      '<div><div style="font-size:7px;color:var(--dim)">L</div><input class="inp" type="number" id="epi_f" value="'+(it.fat||0)+'" style="font-size:14px;text-align:center;padding:4px"></div>'+
+  const row=document.getElementById('epRow_'+ii);
+  if(!row)return;
+  // Check if already editing this row
+  if(row.dataset.editing==='true'){return;}
+  // Close any other open editors first
+  p.items.forEach((_,idx)=>{
+    const r=document.getElementById('epRow_'+idx);
+    if(r&&r.dataset.editing==='true'&&idx!==ii){renderPresetItems();return;}
+  });
+  row.dataset.editing='true';
+  row.innerHTML=
+    '<div style="width:100%;padding:10px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs)">'+
+    '<div style="font-size:12px;font-weight:600;margin-bottom:8px">'+(it.emoji||'🍽')+' '+it.name+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:1px;margin-bottom:2px">GRAMMES</div><input class="inp" type="number" id="epi_g_'+ii+'" value="'+(it.grams||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--orange);letter-spacing:1px;margin-bottom:2px">KCAL</div><input class="inp" type="number" id="epi_k_'+ii+'" value="'+(it.kcal||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"></div>'+
     '</div>'+
-    '<button class="btn ba bs" style="margin-top:6px;padding:6px" onclick="savePresetItem('+ii+')">✓</button>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--blue);letter-spacing:1px;margin-bottom:2px">PROT</div><input class="inp" type="number" id="epi_p_'+ii+'" value="'+(it.prot||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:2px">GLUC</div><input class="inp" type="number" id="epi_c_'+ii+'" value="'+(it.carbs||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--ac);letter-spacing:1px;margin-bottom:2px">LIP</div><input class="inp" type="number" id="epi_f_'+ii+'" value="'+(it.fat||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:6px"><button class="btn ba bs" style="flex:1;padding:8px" onclick="savePresetItem('+ii+')">✓ Valider</button><button class="btn bo bs" style="padding:8px" onclick="renderPresetItems()">✕</button></div>'+
     '</div>';
+  // Focus the grams field after render
+  setTimeout(()=>{const inp=document.getElementById('epi_g_'+ii);if(inp){inp.focus();inp.select();}},100);
 }
 
 function savePresetItem(ii){
   if(_editPresetIdx===null)return;
   const p=mealPresets[_editPresetIdx];
   if(!p||!p.items[ii])return;
-  p.items[ii].grams=parseInt(document.getElementById('epi_g').value)||0;
-  p.items[ii].kcal=parseInt(document.getElementById('epi_k').value)||0;
-  p.items[ii].prot=parseInt(document.getElementById('epi_p').value)||0;
-  p.items[ii].carbs=parseInt(document.getElementById('epi_c').value)||0;
-  p.items[ii].fat=parseInt(document.getElementById('epi_f').value)||0;
+  p.items[ii].grams=parseFloat(document.getElementById('epi_g_'+ii).value)||0;
+  p.items[ii].kcal=parseFloat(document.getElementById('epi_k_'+ii).value)||0;
+  p.items[ii].prot=parseFloat(document.getElementById('epi_p_'+ii).value)||0;
+  p.items[ii].carbs=parseFloat(document.getElementById('epi_c_'+ii).value)||0;
+  p.items[ii].fat=parseFloat(document.getElementById('epi_f_'+ii).value)||0;
   p.totalKcal=p.items.reduce((s,i)=>s+(i.kcal||0),0);
   p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
   p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
   p.totalFat=p.items.reduce((s,i)=>s+(i.fat||0),0);
+  L.s('mealPresets',mealPresets);
   renderPresetItems();
+  toast('Aliment modifié','success',1500);
 }
 
 const PRESET_CATS=[
   {id:'pdej',name:'🌅 Petit-déjeuner'},
   {id:'dej',name:'☀️ Déjeuner'},
   {id:'diner',name:'🌙 Dîner'},
-  {id:'collation',name:'🍎 Collation'}
+  {id:'collation',name:'🍎 Collation'},
+  {id:'cheat',name:'🍔 Cheat Meal'}
 ];
-let _openPresetCats=new Set(['pdej','dej','diner','collation']);
+let _openPresetCats=new Set(['pdej','dej','diner','collation','cheat']);
 
 function getPresetCat(p){return p.category||'collation';}
 
