@@ -153,7 +153,7 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="ct">
 <div class="hdr"><div><div class="logo">DIMITAR</div><div class="hdr-s" id="hSub">Fitness Tracker</div></div><div class="hdr-a"><div class="hdr-b" onclick="document.getElementById('dMod').classList.remove('hid')" aria-label="Données et sauvegarde">💾</div><div class="hdr-b" id="tBtn" onclick="tTh()" aria-label="Changer de thème">🌙</div></div></div>
 <div id="pH" class="pg on">
-<div class="dh"><div><div class="dh-g" id="dGr">Salut 👋</div><div class="dh-d" id="dDt"></div></div><div class="dh-sk"><div class="dh-sn" id="dSk">0</div><div class="dh-sl">Streak 🔥</div></div></div>
+<div class="dh"><div><div class="dh-g" id="dGr">Salut 👋</div><div class="dh-d" id="dDt"></div></div><div class="dh-sk"><div class="dh-sn" id="dSk">0</div><div class="dh-sl">Streak 🔥</div><div style="font-size:9px;color:var(--dim);margin-top:2px" id="dBestSk"></div></div></div>
 <!-- Daily Score TOP -->
 <div style="margin:0 20px 10px" id="dailyScoreCard"></div>
 <div id="exportReminder"></div>
@@ -300,6 +300,8 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="sec"><div class="st">Historique pesées</div><div id="wHi"></div></div>
 <div class="sec"><div class="cd" id="stepsAvgCard"></div></div>
 <div class="chwp"><div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px">🚶 Pas — 30 derniers jours</div><canvas id="stCh" style="width:100%;height:160px"></canvas><div id="stChE" style="display:none;text-align:center;padding:20px;color:var(--fnt)">Saisis tes premiers pas depuis l'accueil</div></div>
+<div class="sec"><div class="cd" id="scoreAvgCard"></div></div>
+<div class="chwp"><div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px">📊 Score global — 30 derniers jours</div><canvas id="scCh" style="width:100%;height:160px"></canvas><div id="scChE" style="display:none;text-align:center;padding:20px;color:var(--fnt)">Commence à tracker tes repas et séances</div></div>
 </div>
 <div style="text-align:center;padding:20px 0 10px;font-size:9px;color:var(--fnt);letter-spacing:1px">Made with ❤️ by <span style="font-weight:700;letter-spacing:2px">WEYNII</span> · v4.0 PWA</div>
 </div>
@@ -337,6 +339,9 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="mt">✏️ Modifier le favori</div>
 <div class="lb">Nom</div>
 <input class="inp" id="efName" style="margin-bottom:8px">
+<div class="lb">Grammes</div>
+<input class="inp" type="number" id="efGrams" style="margin-bottom:8px" oninput="recalcFavFromGrams()">
+<div id="efAutoCalcInfo" style="font-size:9px;color:var(--green);margin-bottom:6px;display:none">Auto-calcul depuis la base de données</div>
 <div class="g2" style="margin-bottom:8px">
   <div><div class="lb">Kcal</div><input class="inp" type="number" id="efKcal"></div>
   <div><div class="lb">Protéines (g)</div><input class="inp" type="number" id="efProt"></div>
@@ -674,10 +679,10 @@ document.getElementById('onb').classList.add('hid');initApp();}
 
 function aFC(){/* no auto-fill — user fills manually */}
 
-function nav(id,b){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tb').forEach(t=>t.classList.remove('on'));document.getElementById('p'+id).classList.add('on');b.classList.add('on');if(id==='H')rH();if(id==='W'){rSe();rCa();rLH();}if(id==='N')rNu();if(id==='Co')renderCoachPage();if(id==='Pl')rPl();if(id==='Pr'){rWe();rStCh();}}
+function nav(id,b){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tb').forEach(t=>t.classList.remove('on'));document.getElementById('p'+id).classList.add('on');b.classList.add('on');if(id==='H')rH();if(id==='W'){rSe();rCa();rLH();}if(id==='N')rNu();if(id==='Co')renderCoachPage();if(id==='Pl')rPl();if(id==='Pr'){rWe();rStCh();rScCh();}}
 function wTab(i,b){document.querySelectorAll('.wtt').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.wv').forEach(v=>v.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.wv')[i].classList.add('on');if(i===0)rCa();if(i===1)rSe();if(i===2){pLS();rLH();rPrGraph();}}
 
-function rH(){if(!P)return;const d=new Date(),dn=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][d.getDay()];document.getElementById('dGr').textContent='Salut '+P.name+' 👋';document.getElementById('dDt').textContent=dn+' '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});document.getElementById('hSub').textContent=P.name+' · '+gLb(P.goal);const streak=cSk();document.getElementById('dSk').textContent=streak;const dd2=gd(td());
+function rH(){if(!P)return;const d=new Date(),dn=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][d.getDay()];document.getElementById('dGr').textContent='Salut '+P.name+' 👋';document.getElementById('dDt').textContent=dn+' '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});document.getElementById('hSub').textContent=P.name+' · '+gLb(P.goal);const streak=cSk();document.getElementById('dSk').textContent=streak;const best=getBestStreak();document.getElementById('dBestSk').textContent=best>streak?'Record: '+best:'';const dd2=gd(td());
 const tSes=gCalSes(td());if(tSes.length){document.getElementById('tS').textContent=tSes.map(s=>s.name).join(' + ');document.getElementById('tSs').textContent=tSes.map(s=>s.focus||'').join(' · ');}else{document.getElementById('tS').textContent='Repos';document.getElementById('tSs').textContent='Aucune séance planifiée';}
 let kT=0,hP=0,hCb=0,hFt=0;const nt=nL[td()];if(nt&&nt.meals)nt.meals.forEach(m=>m.items.forEach(i=>{if(i.eaten!==false){kT+=i.kcal||0;hP+=i.prot||0;hCb+=i.carbs||0;hFt+=i.fat||0;}}));
 // Recalculate kcalBurned from actual checked sessions + logged sessions (fix ghost data)
@@ -755,7 +760,11 @@ document.getElementById('homeStepsRing').innerHTML=`<div style="position:relativ
 document.getElementById('homeStepsNum').textContent=stCur.toLocaleString('fr-FR');
 document.getElementById('homeStepsGoal').textContent=' / '+stGoal.toLocaleString('fr-FR');
 rWater();rCk();renderDailyScore();renderCoachFeedback();checkExportReminder();}
-function cSk(){let s=0,d=new Date();for(let i=0;i<365;i++){const k=d.toISOString().slice(0,10);if(dy[k]&&dy[k].completed)s++;else if(i>0)break;d.setDate(d.getDate()-1);}return s;}
+function cSk(){let s=0,d=new Date();for(let i=0;i<365;i++){const k=d.toISOString().slice(0,10);if(dy[k]&&dy[k].completed)s++;else if(i>0)break;d.setDate(d.getDate()-1);}
+// Track best streak ever
+let best=L.g('bestStreak',0);if(s>best){best=s;L.s('bestStreak',best);}
+return s;}
+function getBestStreak(){return L.g('bestStreak',0);}
 function rCk(){const dd2=gd(td()),ch=dd2.checks||{},items=[];
 const tSes2=gCalSes(td());
 tSes2.forEach(s=>items.push({id:'ses_'+s.id,l:'💪 '+s.name,s:s.focus||'',color:s.color}));
@@ -2481,16 +2490,42 @@ function confirmAddFav(mi){
 }
 function rmFav(i){favFoods.splice(i,1);L.s('fav',favFoods);rNu();}
 let _editFavIdx=null;
+let _editFavDbFood=null;
 function editFav(i){
   const f=favFoods[i];if(!f)return;
   _editFavIdx=i;
+  _editFavDbFood=FOODS.find(fd=>fd.n===f.name)||null;
   document.getElementById('efName').value=f.name||'';
+  document.getElementById('efGrams').value=f.grams||100;
   document.getElementById('efKcal').value=f.kcal||0;
   document.getElementById('efProt').value=f.prot||0;
   document.getElementById('efCarbs').value=f.carbs||0;
   document.getElementById('efFat').value=f.fat||0;
+  const info=document.getElementById('efAutoCalcInfo');
+  if(_editFavDbFood){
+    info.style.display='block';
+    document.getElementById('efKcal').readOnly=true;document.getElementById('efKcal').style.opacity='.7';
+    document.getElementById('efProt').readOnly=true;document.getElementById('efProt').style.opacity='.7';
+    document.getElementById('efCarbs').readOnly=true;document.getElementById('efCarbs').style.opacity='.7';
+    document.getElementById('efFat').readOnly=true;document.getElementById('efFat').style.opacity='.7';
+  }else{
+    info.style.display='none';
+    document.getElementById('efKcal').readOnly=false;document.getElementById('efKcal').style.opacity='1';
+    document.getElementById('efProt').readOnly=false;document.getElementById('efProt').style.opacity='1';
+    document.getElementById('efCarbs').readOnly=false;document.getElementById('efCarbs').style.opacity='1';
+    document.getElementById('efFat').readOnly=false;document.getElementById('efFat').style.opacity='1';
+  }
   document.getElementById('editFavMd').classList.remove('hid');
-  setTimeout(()=>document.getElementById('efName').focus(),200);
+  setTimeout(()=>document.getElementById('efGrams').focus(),200);
+}
+function recalcFavFromGrams(){
+  if(!_editFavDbFood)return;
+  const g=parseFloat(document.getElementById('efGrams').value)||0;
+  const q=g/100;
+  document.getElementById('efKcal').value=Math.round(_editFavDbFood.k*q);
+  document.getElementById('efProt').value=Math.round(_editFavDbFood.p*q);
+  document.getElementById('efCarbs').value=Math.round(_editFavDbFood.g*q);
+  document.getElementById('efFat').value=Math.round(_editFavDbFood.l*q);
 }
 function confirmEditFav(){
   if(_editFavIdx===null)return;
@@ -2499,6 +2534,7 @@ function confirmEditFav(){
   if(!name)return toast('Nom requis','warn');
   favFoods[_editFavIdx]={...f,
     name,
+    grams:parseInt(document.getElementById('efGrams').value)||100,
     kcal:parseInt(document.getElementById('efKcal').value)||0,
     prot:parseInt(document.getElementById('efProt').value)||0,
     carbs:parseInt(document.getElementById('efCarbs').value)||0,
@@ -2506,7 +2542,7 @@ function confirmEditFav(){
   };
   L.s('fav',favFoods);
   document.getElementById('editFavMd').classList.add('hid');
-  _editFavIdx=null;
+  _editFavIdx=null;_editFavDbFood=null;
   rNu();toast('Favori modifié','success',2000);
 }
 
@@ -2692,7 +2728,97 @@ days.forEach((d,i)=>{
   }
 });
 }
-function svSp(){/* kept for compat */}
+
+function calcDailyScoreForDate(dateStr){
+if(!P)return 0;
+const dd2=dy[dateStr]||{};
+const nt=nL[dateStr];
+let tK=0,tP=0;
+if(nt&&nt.meals)nt.meals.forEach(m=>m.items.forEach(i=>{if(i.eaten!==false){tK+=i.kcal||0;tP+=i.prot||0;}}));
+if(tK===0&&!dd2.steps&&!dd2.completed)return -1; // no data
+const goalK=P.kcal||2500;
+const goalP=Math.round(goalK*.3/4);
+const stGoal=P.stepsGoal||10000;
+const stCur=dd2.steps||0;
+const kcalDiff=Math.abs(tK-goalK)/goalK;
+const kcalScore=tK>0?Math.max(0,1-kcalDiff*2):0;
+const protScore=tP>0?Math.min(1,tP/goalP):0;
+const stepsScore=Math.min(1,stCur/stGoal);
+const todaySes=gCalSes(dateStr);
+const todayLogged=wL.filter(l=>l.date===dateStr).length;
+const todayChecked=dd2.checks?Object.keys(dd2.checks).filter(k=>k.startsWith('ses_')&&dd2.checks[k]).length:0;
+const hasSes=todaySes.length>0;
+const didTrain=todayLogged>0||todayChecked>0;
+const trainScore=hasSes?(didTrain?1:0):1;
+const global=Math.round((kcalScore*0.4+protScore*0.3+stepsScore*0.15+trainScore*0.15)*10*10)/10;
+return Math.min(10,global);
+}
+
+function rScCh(){
+if(!P)return;
+const days=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().slice(0,10);const sc=calcDailyScoreForDate(k);days.push({date:k,score:sc});}
+const withData=days.filter(d=>d.score>=0);
+const card=document.getElementById('scoreAvgCard');
+if(withData.length){
+  const total=withData.reduce((s,d)=>s+d.score,0);
+  const avg=Math.round(total/withData.length*10)/10;
+  const best=Math.max(...withData.map(d=>d.score));
+  const worst=Math.min(...withData.map(d=>d.score));
+  const avgCol=avg>=8?'var(--green)':avg>=5?'var(--orange)':'var(--red)';
+  const bestCol=best>=8?'var(--green)':best>=5?'var(--orange)':'var(--red)';
+  const worstCol=worst>=8?'var(--green)':worst>=5?'var(--orange)':'var(--red)';
+  const above8=withData.filter(d=>d.score>=8).length;
+  card.innerHTML=`<div class="ct2">📊 Statistiques score global</div>
+  <div style="display:flex;gap:10px;margin-bottom:10px">
+    <div style="flex:1;text-align:center;padding:10px;background:var(--s2);border-radius:var(--rs)"><div style="font-size:8px;color:var(--dim);letter-spacing:1px">MOYENNE</div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${avgCol}">${avg}</div><div style="font-size:10px;color:var(--dim)">/10</div></div>
+    <div style="flex:1;text-align:center;padding:10px;background:var(--s2);border-radius:var(--rs)"><div style="font-size:8px;color:var(--dim);letter-spacing:1px">MEILLEUR</div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${bestCol}">${best}</div></div>
+    <div style="flex:1;text-align:center;padding:10px;background:var(--s2);border-radius:var(--rs)"><div style="font-size:8px;color:var(--dim);letter-spacing:1px">PLUS BAS</div><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${worstCol}">${worst}</div></div>
+  </div>
+  <div style="font-size:11px;color:var(--dim)">${withData.length} jours trackés · ${above8} jours ≥ 8/10</div>`;
+}else{card.innerHTML=`<div class="ct2">📊 Statistiques score</div><div style="font-size:12px;color:var(--fnt);text-align:center;padding:10px">Tracke tes repas et séances pour voir tes stats</div>`;}
+// Chart
+const hasChart=withData.length>=2;
+document.getElementById('scChE').style.display=hasChart?'none':'block';
+document.getElementById('scCh').style.display=hasChart?'block':'none';
+if(!hasChart)return;
+const c=document.getElementById('scCh'),ctx=c.getContext('2d'),dp=devicePixelRatio||1,r=c.getBoundingClientRect();
+c.width=r.width*dp;c.height=r.height*dp;ctx.scale(dp,dp);
+const W=r.width,H=r.height;ctx.clearRect(0,0,W,H);
+const mx=10.5;
+const pd2={l:28,r:10,t:10,b:22},gW=W-pd2.l-pd2.r,gH=H-pd2.t-pd2.b;
+const dimCol=getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();
+const bdCol=getComputedStyle(document.documentElement).getPropertyValue('--bd').trim();
+const greenCol=getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+const orangeCol=getComputedStyle(document.documentElement).getPropertyValue('--orange').trim();
+const redCol=getComputedStyle(document.documentElement).getPropertyValue('--red').trim();
+// Y-axis grid
+ctx.strokeStyle=bdCol;ctx.lineWidth=.5;
+for(let v=0;v<=10;v+=2){
+  const y=pd2.t+gH-((v/mx)*gH);
+  ctx.beginPath();ctx.moveTo(pd2.l,y);ctx.lineTo(W-pd2.r,y);ctx.stroke();
+  ctx.fillStyle=dimCol;ctx.font='8px Manrope';ctx.textAlign='right';
+  ctx.fillText(v,pd2.l-4,y+3);
+}
+// Goal line at 8
+const goalY=pd2.t+gH-((8/mx)*gH);
+ctx.strokeStyle=greenCol;ctx.lineWidth=1;ctx.setLineDash([4,4]);
+ctx.beginPath();ctx.moveTo(pd2.l,goalY);ctx.lineTo(W-pd2.r,goalY);ctx.stroke();ctx.setLineDash([]);
+ctx.fillStyle=greenCol;ctx.font='bold 8px Manrope';ctx.textAlign='right';ctx.fillText('8',pd2.l-4,goalY-4);
+// Bars
+const bW=Math.max(4,Math.floor(gW/days.length)-2);
+days.forEach((d,i)=>{
+  if(d.score<0)return; // no data
+  const x=pd2.l+(i/days.length)*gW+1;
+  const h=mx>0?(d.score/mx)*gH:0;
+  const y=pd2.t+gH-h;
+  ctx.fillStyle=d.score>=8?greenCol:d.score>=5?orangeCol:redCol;
+  ctx.fillRect(x,y,bW,h);
+  if(i%5===0||i===days.length-1){
+    ctx.fillStyle=dimCol;ctx.font='7px Manrope';ctx.textAlign='center';
+    ctx.fillText(d.date.slice(5),x+bW/2,H-2);
+  }
+});
+}
 function svStHome(){const v=parseInt(document.getElementById('homeStepsInp').value);if(isNaN(v)||v<=0)return;const d=gd(td());d.steps=v;if(P&&v>=P.stepsGoal){if(!d.checks)d.checks={};d.checks['steps']=true;}sdy();document.getElementById('homeStepsInp').value='';rH();}
 
 function calcWaterGoal(){
@@ -2892,7 +3018,7 @@ function tTh(){const l=document.body.classList.toggle('light');document.getEleme
 function iTh(){try{if(localStorage.getItem('d3_th')==='l'){document.body.classList.add('light');document.getElementById('tBtn').textContent='🌑';}}catch(e){}}
 function xD(){
   L.s('lastExport',Date.now());
-  const d={P,ses,cal,wL,wE,nL,dy,obj,wPl,fav:favFoods,recentFoods,mealPresets,_v:4.0};
+  const d={P,ses,cal,wL,wE,nL,dy,obj,wPl,fav:favFoods,recentFoods,mealPresets,bestStreak:L.g('bestStreak',0),_v:4.0};
   const json=JSON.stringify(d,null,2);
   const blob=new Blob([json],{type:'application/json'});
   const fname='dimitar_'+td()+'.json';
@@ -2920,7 +3046,7 @@ function xD(){
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},500);
   toast('Backup exporté !','success');checkExportReminder();
 }
-function mD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);const vErr=validateImportData(d);if(vErr.length){toast('Attention: '+vErr.join(', '),'warn',4000);}['P','ses','cal','wL','wE','nL','dy','obj','wPl'].forEach(k=>{if(d[k]){eval(k+'=d[k]');L.s(k,d[k]);}});if(d.fav){favFoods=d.fav;L.s('fav',favFoods);}if(d.recentFoods){recentFoods=d.recentFoods;L.s('recentFoods',recentFoods);}if(d.mealPresets){mealPresets=d.mealPresets;L.s('mealPresets',mealPresets);}toast('Données importées !','success');initApp();document.getElementById('dMod').classList.add('hid');}catch(err){toast('Erreur: fichier invalide','error');}};r.readAsText(f);}
+function mD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);const vErr=validateImportData(d);if(vErr.length){toast('Attention: '+vErr.join(', '),'warn',4000);}['P','ses','cal','wL','wE','nL','dy','obj','wPl'].forEach(k=>{if(d[k]){eval(k+'=d[k]');L.s(k,d[k]);}});if(d.fav){favFoods=d.fav;L.s('fav',favFoods);}if(d.recentFoods){recentFoods=d.recentFoods;L.s('recentFoods',recentFoods);}if(d.mealPresets){mealPresets=d.mealPresets;L.s('mealPresets',mealPresets);}if(d.bestStreak){L.s('bestStreak',Math.max(d.bestStreak,L.g('bestStreak',0)));}toast('Données importées !','success');initApp();document.getElementById('dMod').classList.add('hid');}catch(err){toast('Erreur: fichier invalide','error');}};r.readAsText(f);}
 function chIm(){const p=new URLSearchParams(location.search).get('i');if(p){try{const d=JSON.parse(decodeURIComponent(escape(atob(p))));if(d.ses&&confirm('Importer '+d.ses.length+' séances ?')){d.ses.forEach(s=>{s.id='s_'+Date.now()+'_'+Math.random().toString(36).slice(2,5);ses.push(s);});if(d.cal)Object.assign(cal,d.cal);L.s('ses',ses);L.s('cal',cal);toast('Séances importées !','success');history.replaceState({},'',location.pathname);}}catch(e){}}}
 // ═══ COACHING ENGINE ═══
 
@@ -3432,8 +3558,35 @@ function filterPresetFoods(){
 function addFoodToPreset(foodIdx){
   if(_editPresetIdx===null)return;
   const f=FOODS[foodIdx];if(!f)return;
+  // Show portion picker inline instead of auto-adding at 100g
+  const res=document.getElementById('epAddFoodRes');
+  res.innerHTML=`<div style="padding:10px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs);margin-top:4px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">${f.e} ${f.n}</div>
+    <div style="display:flex;gap:8px;align-items:end;margin-bottom:6px">
+      <div style="flex:1"><div style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:1px;margin-bottom:2px">GRAMMES</div><input class="inp" type="number" id="epAddG" value="100" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric" oninput="previewPresetAdd(${foodIdx})"></div>
+      <div style="flex:2" id="epAddPrev"></div>
+    </div>
+    <div style="display:flex;gap:6px"><button class="btn ba bs" style="flex:1;padding:8px" onclick="confirmAddFoodToPreset(${foodIdx})">✓ Ajouter</button><button class="btn bo bs" style="padding:8px" onclick="document.getElementById('epAddFoodRes').innerHTML='';document.getElementById('epAddFoodQ').value=''">✕</button></div>
+  </div>`;
+  document.getElementById('epAddFoodQ').value='';
+  previewPresetAdd(foodIdx);
+  setTimeout(()=>{const inp=document.getElementById('epAddG');if(inp){inp.focus();inp.select();}},100);
+}
+
+function previewPresetAdd(foodIdx){
+  const f=FOODS[foodIdx];if(!f)return;
+  const g=parseFloat(document.getElementById('epAddG').value)||0;
+  const q=g/100;
+  document.getElementById('epAddPrev').innerHTML=`<div style="display:flex;gap:8px;font-size:11px;flex-wrap:wrap"><span style="color:var(--orange);font-weight:700">${Math.round(f.k*q)}kcal</span><span style="color:var(--blue)">P${Math.round(f.p*q)}</span><span style="color:var(--green)">G${Math.round(f.g*q)}</span><span style="color:var(--ac)">L${Math.round(f.l*q)}</span></div>`;
+}
+
+function confirmAddFoodToPreset(foodIdx){
+  if(_editPresetIdx===null)return;
+  const f=FOODS[foodIdx];if(!f)return;
+  const g=parseFloat(document.getElementById('epAddG').value)||100;
+  const q=g/100;
   const p=mealPresets[_editPresetIdx];
-  p.items.push({name:f.n,emoji:f.e,grams:100,kcal:f.k,prot:f.p,carbs:f.g,fat:f.l,eaten:true});
+  p.items.push({name:f.n,emoji:f.e,grams:Math.round(g),kcal:Math.round(f.k*q),prot:Math.round(f.p*q),carbs:Math.round(f.g*q),fat:Math.round(f.l*q),eaten:true,_dbIdx:FOODS.indexOf(f)});
   p.totalKcal=p.items.reduce((s,i)=>s+(i.kcal||0),0);
   p.totalProt=p.items.reduce((s,i)=>s+(i.prot||0),0);
   p.totalCarbs=p.items.reduce((s,i)=>s+(i.carbs||0),0);
@@ -3442,7 +3595,7 @@ function addFoodToPreset(foodIdx){
   document.getElementById('epAddFoodQ').value='';
   document.getElementById('epAddFoodRes').innerHTML='';
   renderPresetItems();
-  toast(f.e+' '+f.n+' ajouté · Clique ✏️ pour modifier','success',2000);
+  toast(f.e+' '+f.n+' ('+Math.round(g)+'g) ajouté','success',2000);
 }
 
 function confirmEditPreset(){
@@ -3504,30 +3657,45 @@ function editPresetItem(ii){
   const it=p.items[ii];
   const row=document.getElementById('epRow_'+ii);
   if(!row)return;
-  // Check if already editing this row
   if(row.dataset.editing==='true'){return;}
-  // Close any other open editors first
+  // Close any other open editors
   p.items.forEach((_,idx)=>{
     const r=document.getElementById('epRow_'+idx);
     if(r&&r.dataset.editing==='true'&&idx!==ii){renderPresetItems();return;}
   });
   row.dataset.editing='true';
+  // Check if food is from DB for auto-recalc
+  const dbFood=typeof it._dbIdx==='number'?FOODS[it._dbIdx]:FOODS.find(f=>f.n===it.name);
+  const hasDb=!!dbFood;
+  const gramsInput='<input class="inp" type="number" id="epi_g_'+ii+'" value="'+(it.grams||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"'+(hasDb?' oninput="recalcPresetItem('+ii+')"':'')+' >';
   row.innerHTML=
     '<div style="width:100%;padding:10px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs)">'+
-    '<div style="font-size:12px;font-weight:600;margin-bottom:8px">'+(it.emoji||'🍽')+' '+it.name+'</div>'+
+    '<div style="font-size:12px;font-weight:600;margin-bottom:8px">'+(it.emoji||'🍽')+' '+it.name+(hasDb?' <span style="font-size:9px;color:var(--green)">· auto-calc</span>':'')+'</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">'+
-      '<div><div style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:1px;margin-bottom:2px">GRAMMES</div><input class="inp" type="number" id="epi_g_'+ii+'" value="'+(it.grams||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"></div>'+
-      '<div><div style="font-size:8px;font-weight:700;color:var(--orange);letter-spacing:1px;margin-bottom:2px">KCAL</div><input class="inp" type="number" id="epi_k_'+ii+'" value="'+(it.kcal||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--dim);letter-spacing:1px;margin-bottom:2px">GRAMMES</div>'+gramsInput+'</div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--orange);letter-spacing:1px;margin-bottom:2px">KCAL</div><input class="inp" type="number" id="epi_k_'+ii+'" value="'+(it.kcal||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="numeric"'+(hasDb?' readonly style="font-size:16px;text-align:center;padding:6px;opacity:.7"':'')+' ></div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">'+
-      '<div><div style="font-size:8px;font-weight:700;color:var(--blue);letter-spacing:1px;margin-bottom:2px">PROT</div><input class="inp" type="number" id="epi_p_'+ii+'" value="'+(it.prot||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
-      '<div><div style="font-size:8px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:2px">GLUC</div><input class="inp" type="number" id="epi_c_'+ii+'" value="'+(it.carbs||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
-      '<div><div style="font-size:8px;font-weight:700;color:var(--ac);letter-spacing:1px;margin-bottom:2px">LIP</div><input class="inp" type="number" id="epi_f_'+ii+'" value="'+(it.fat||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--blue);letter-spacing:1px;margin-bottom:2px">PROT</div><input class="inp" type="number" id="epi_p_'+ii+'" value="'+(it.prot||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"'+(hasDb?' readonly style="font-size:16px;text-align:center;padding:6px;opacity:.7"':'')+' ></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:2px">GLUC</div><input class="inp" type="number" id="epi_c_'+ii+'" value="'+(it.carbs||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"'+(hasDb?' readonly style="font-size:16px;text-align:center;padding:6px;opacity:.7"':'')+' ></div>'+
+      '<div><div style="font-size:8px;font-weight:700;color:var(--ac);letter-spacing:1px;margin-bottom:2px">LIP</div><input class="inp" type="number" id="epi_f_'+ii+'" value="'+(it.fat||0)+'" style="font-size:16px;text-align:center;padding:6px" inputmode="decimal"'+(hasDb?' readonly style="font-size:16px;text-align:center;padding:6px;opacity:.7"':'')+' ></div>'+
     '</div>'+
     '<div style="display:flex;gap:6px"><button class="btn ba bs" style="flex:1;padding:8px" onclick="savePresetItem('+ii+')">✓ Valider</button><button class="btn bo bs" style="padding:8px" onclick="renderPresetItems()">✕</button></div>'+
     '</div>';
-  // Focus the grams field after render
   setTimeout(()=>{const inp=document.getElementById('epi_g_'+ii);if(inp){inp.focus();inp.select();}},100);
+}
+
+function recalcPresetItem(ii){
+  if(_editPresetIdx===null)return;
+  const it=mealPresets[_editPresetIdx].items[ii];if(!it)return;
+  const dbFood=typeof it._dbIdx==='number'?FOODS[it._dbIdx]:FOODS.find(f=>f.n===it.name);
+  if(!dbFood)return;
+  const g=parseFloat(document.getElementById('epi_g_'+ii).value)||0;
+  const q=g/100;
+  document.getElementById('epi_k_'+ii).value=Math.round(dbFood.k*q);
+  document.getElementById('epi_p_'+ii).value=Math.round(dbFood.p*q);
+  document.getElementById('epi_c_'+ii).value=Math.round(dbFood.g*q);
+  document.getElementById('epi_f_'+ii).value=Math.round(dbFood.l*q);
 }
 
 function savePresetItem(ii){
@@ -3648,7 +3816,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 
 // ═══ SHARE FUNCTIONALITY (enhanced) ═══
 function shP() {
-  const data = { P, ses, cal, wL, wE, nL, dy, obj, wPl, fav: favFoods, recentFoods, mealPresets, _v:4.0 };
+  const data = { P, ses, cal, wL, wE, nL, dy, obj, wPl, fav: favFoods, recentFoods, mealPresets, bestStreak:L.g('bestStreak',0), _v:4.0 };
   const json = JSON.stringify(data);
   const blob = new Blob([json], { type: 'application/json' });
   const fname = 'dimitar-backup-' + td() + '.json';
