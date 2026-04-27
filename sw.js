@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dimitar-v19';
+const CACHE_NAME = 'dimitar-v20';
 const ASSETS = [
   './',
   './index.html',
