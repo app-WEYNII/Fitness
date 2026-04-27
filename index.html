@@ -414,7 +414,49 @@ body.light{--bg:#f8f6f2;--s1:#fff;--s2:#f0ede8;--s3:#e5e1db;--bd:#d5d0c8;--ac:#2
 <div class="ma"><button class="btn bo" onclick="cancelDel()">Annuler</button><button class="btn bd" onclick="confirmDel()" style="background:var(--red);color:#fff;border:none">Supprimer</button></div>
 </div></div>
 
-<div class="md hid" id="obMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms"><div class="mt">🎯 Nouvel objectif</div><div class="lb">Objectif</div><select class="inp" id="obG"><option value="cut">Sèche</option><option value="recomp">Recomposition</option><option value="bulk">Prise de masse</option><option value="maintain">Maintien</option></select><div class="lb" style="margin-top:8px">Date cible (optionnel)</div><input class="inp" type="date" id="obDt"><div class="lb" style="margin-top:8px">Séances / semaine</div><select class="inp" id="obFr"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><div class="lb" style="margin-top:8px">Type</div><select class="inp" id="obTp"><option value="hyper">Hypertrophie</option><option value="strength">Force</option><option value="mix">Mixte</option></select><div class="ma"><button class="btn bo" onclick="document.getElementById('obMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="svObj()">⚡ Générer</button></div></div></div>
+<div class="md hid" id="obMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms" style="max-height:85vh;overflow-y:auto"><div class="mt">🎯 Nouvel objectif</div>
+<div class="lb">Objectif</div>
+<select class="inp" id="obG" onchange="obGoalChanged()"><option value="cut">Sèche</option><option value="recomp">Recomposition</option><option value="bulk">Prise de masse</option><option value="maintain">Maintien</option></select>
+
+<div id="obWeightGoalBox" style="display:none;margin-top:10px;padding:14px;background:linear-gradient(135deg,rgba(255,77,90,.08),rgba(255,77,90,.04));border:1px solid rgba(255,77,90,.25);border-radius:var(--r)">
+<div style="font-size:11px;font-weight:700;color:var(--red);letter-spacing:1px;margin-bottom:10px">🎯 OBJECTIF POIDS</div>
+<div class="g2">
+<div><div class="lb">Poids actuel (kg)</div><input class="inp" type="number" id="obCurW" step="0.1" oninput="calcWeightGoal()"></div>
+<div><div class="lb">Poids cible (kg)</div><input class="inp" type="number" id="obTgtW" step="0.1" oninput="calcWeightGoal()"></div>
+</div>
+<div id="obWgCalc" style="margin-top:10px"></div>
+</div>
+
+<div id="obBulkGoalBox" style="display:none;margin-top:10px;padding:14px;background:linear-gradient(135deg,rgba(91,168,255,.08),rgba(91,168,255,.04));border:1px solid rgba(91,168,255,.25);border-radius:var(--r)">
+<div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:1px;margin-bottom:10px">💪 OBJECTIF PRISE DE MASSE</div>
+<div class="g2">
+<div><div class="lb">Poids actuel (kg)</div><input class="inp" type="number" id="obBulkCurW" step="0.1" oninput="calcBulkGoal()"></div>
+<div><div class="lb">Poids cible (kg)</div><input class="inp" type="number" id="obBulkTgtW" step="0.1" oninput="calcBulkGoal()"></div>
+</div>
+<div id="obBulkCalc" style="margin-top:10px"></div>
+</div>
+
+<div class="lb" style="margin-top:8px">Date cible</div><input class="inp" type="date" id="obDt" oninput="calcWeightGoal();calcBulkGoal()">
+<div class="lb" style="margin-top:8px">Séances / semaine</div>
+<select class="inp" id="obFr"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select>
+<div class="lb" style="margin-top:8px">Type</div>
+<select class="inp" id="obTp"><option value="hyper">Hypertrophie</option><option value="strength">Force</option><option value="mix">Mixte</option></select>
+
+<div id="obSesWarn" style="display:none;margin-top:12px;padding:12px;background:linear-gradient(135deg,rgba(255,159,67,.08),rgba(255,159,67,.04));border:1px solid rgba(255,159,67,.25);border-radius:var(--r)">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:18px">⚠️</span><span style="font-size:12px;font-weight:700">Séances existantes</span></div>
+<div style="font-size:11px;color:var(--dim);line-height:1.5" id="obSesWarnMsg"></div>
+<div style="display:flex;gap:6px;margin-top:8px">
+<label style="flex:1;display:flex;align-items:center;gap:6px;padding:8px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;font-size:11px;font-weight:600">
+<input type="radio" name="obSesMode" value="keep" checked style="accent-color:var(--ac)"> Garder mes séances
+</label>
+<label style="flex:1;display:flex;align-items:center;gap:6px;padding:8px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;font-size:11px;font-weight:600">
+<input type="radio" name="obSesMode" value="replace"> Remplacer
+</label>
+</div>
+</div>
+
+<div class="ma"><button class="btn bo" onclick="document.getElementById('obMd').classList.add('hid')">Annuler</button><button class="btn ba" onclick="svObj()">⚡ Générer</button></div>
+</div></div>
 
 <!-- Bad Day Modal -->
 <div class="md hid" id="badDayMd" onclick="if(event.target===this)this.classList.add('hid')"><div class="ms" style="text-align:center">
@@ -804,8 +846,8 @@ function doReset(){document.getElementById('dMod').classList.add('hid');document
 function confirmReset(){localStorage.clear();location.reload();}
 function cancelReset(){document.getElementById('resetMd').classList.add('hid');}
 
-function rSe(){const totalSes=Object.values(dy).reduce((tot,d)=>{if(!d.checks)return tot;return tot+Object.keys(d.checks).filter(k=>k.startsWith('ses_')&&d.checks[k]).length;},0);const sesEl=document.getElementById('sesCount');if(sesEl)sesEl.textContent=totalSes;const l=document.getElementById('sLst');if(!ses.length){l.innerHTML='<div class="empty" style="padding:30px"><div style="font-size:40px;margin-bottom:8px">🏋️</div><p style="font-size:13px;color:var(--fnt)">Aucune séance créée.<br>Crée ta première séance !</p></div>';return;}
-l.innerHTML=ses.map(s=>`<div class="sc"><div class="sch"><div class="scc" style="background:${s.color}"></div><div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><div class="scn">${s.name}</div>${s.badge?`<span style="padding:1px 6px;border-radius:12px;background:${s.badgeColor||'var(--dim)'}20;color:${s.badgeColor||'var(--dim)'};font-size:7px;font-weight:800;letter-spacing:1px">${s.badge}</span>`:''}</div><div class="sci">${s.focus||'—'}${s.exercises.length?' · '+s.exercises.length+' exos':''}${s.duration?' · '+s.duration+'min':''}${s.kcalEst?' · ~'+s.kcalEst+'kcal':''}</div></div><div class="sca"><div class="scb" onclick="shareSes('${s.id}')" title="Partager">📤</div><div class="scb" onclick="openCS('${s.id}')" title="Modifier">✏️</div><div class="scb" onclick="delSes('${s.id}',event)" title="Supprimer">🗑</div></div></div>${s.exercises.length?`<div class="sel">${s.exercises.map((e,i)=>`<div class="se" style="flex-wrap:wrap"><span class="sen">${i+1}</span><span style="flex:1">${e.name}</span><span style="font-size:10px;color:var(--dim);white-space:nowrap">${e.sets}×${e.reps} · ${e.rest}</span>${e.note?`<div style="width:100%;font-size:9px;color:var(--ac);margin-top:2px;padding-left:28px;font-style:italic">${e.note}</div>`:''}</div>`).join('')}</div>`:''}</div>`).join('');}
+function rSe(){const totalSes=Object.values(dy).reduce((tot,d)=>{if(!d.checks)return tot;return tot+Object.keys(d.checks).filter(k=>k.startsWith('ses_')&&d.checks[k]).length;},0);const sesEl=document.getElementById('sesCount');if(sesEl)sesEl.textContent=totalSes;const l=document.getElementById('sLst');const activeSes=ses.filter(s=>!s.archived);if(!activeSes.length){l.innerHTML='<div class="empty" style="padding:30px"><div style="font-size:40px;margin-bottom:8px">🏋️</div><p style="font-size:13px;color:var(--fnt)">Aucune séance créée.<br>Crée ta première séance !</p></div>';return;}
+l.innerHTML=activeSes.map(s=>`<div class="sc"><div class="sch"><div class="scc" style="background:${s.color}"></div><div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><div class="scn">${s.name}</div>${s.badge?`<span style="padding:1px 6px;border-radius:12px;background:${s.badgeColor||'var(--dim)'}20;color:${s.badgeColor||'var(--dim)'};font-size:7px;font-weight:800;letter-spacing:1px">${s.badge}</span>`:''}</div><div class="sci">${s.focus||'—'}${s.exercises.length?' · '+s.exercises.length+' exos':''}${s.duration?' · '+s.duration+'min':''}${s.kcalEst?' · ~'+s.kcalEst+'kcal':''}</div></div><div class="sca"><div class="scb" onclick="shareSes('${s.id}')" title="Partager">📤</div><div class="scb" onclick="openCS('${s.id}')" title="Modifier">✏️</div><div class="scb" onclick="delSes('${s.id}',event)" title="Supprimer">🗑</div></div></div>${s.exercises.length?`<div class="sel">${s.exercises.map((e,i)=>`<div class="se" style="flex-wrap:wrap"><span class="sen">${i+1}</span><span style="flex:1">${e.name}</span><span style="font-size:10px;color:var(--dim);white-space:nowrap">${e.sets}×${e.reps} · ${e.rest}</span>${e.note?`<div style="width:100%;font-size:9px;color:var(--ac);margin-top:2px;padding-left:28px;font-style:italic">${e.note}</div>`:''}</div>`).join('')}</div>`:''}</div>`).join('');}
 
 let delTarget=null;
 function delSes(id,ev){if(ev)ev.stopPropagation();delTarget=id;const s=ses.find(x=>x.id===id);document.getElementById('delName').textContent=s?s.name:'cette séance';document.getElementById('delMd').classList.remove('hid');}
@@ -984,14 +1026,14 @@ const curSes=gCalSes(ds);
 let html='';
 if(curSes.length){html+=`<div style="margin-bottom:10px">`+curSes.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--acd);border:1px solid var(--acm);border-radius:var(--rs);margin-bottom:4px"><span style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></span><span style="flex:1;font-size:12px;font-weight:600">${s.name}</span><span style="font-size:16px;cursor:pointer" onclick="calRem('${ds}','${s.id}');document.getElementById('caMd').classList.add('hid');rCa();rH()">×</span></div>`).join('')+`</div>`;}
 html+=`<div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--dim);margin-bottom:6px">AJOUTER UNE SÉANCE</div>`;
-html+=ses.map(s=>{const already=curSes.some(c=>c.id===s.id);return`<button class="btn bo" style="margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:8px${already?';opacity:.4;pointer-events:none':''}" onclick="caAs('${s.id}')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></span>${s.name}${already?' ✓':''}</button>`;}).join('');
+html+=ses.filter(s=>!s.archived).map(s=>{const already=curSes.some(c=>c.id===s.id);return`<button class="btn bo" style="margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:8px${already?';opacity:.4;pointer-events:none':''}" onclick="caAs('${s.id}')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></span>${s.name}${already?' ✓':''}</button>`;}).join('');
 document.getElementById('caML').innerHTML=html;document.getElementById('caMd').classList.remove('hid');}
 
 function caAs(sid){if(sid){calAdd(caD,sid);}else{delete cal[caD];L.s('cal',cal);}document.getElementById('caMd').classList.add('hid');rCa();rH();}
 
 function addCalSession(){document.getElementById('caMd').classList.add('hid');openCS();}
 
-function pLS(){const s=document.getElementById('lSS');s.innerHTML='<option value="">—</option>'+ses.map(x=>`<option value="${x.id}">${x.name}</option>`).join('');const tSes3=gCal(td());if(tSes3.length)s.value=tSes3[0];lSC();}
+function pLS(){const s=document.getElementById('lSS');s.innerHTML='<option value="">—</option>'+ses.filter(x=>!x.archived).map(x=>`<option value="${x.id}">${x.name}</option>`).join('');const tSes3=gCal(td());if(tSes3.length)s.value=tSes3[0];lSC();}
 function lSC(){const sid=document.getElementById('lSS').value;cLS=sid?ses.find(s=>s.id===sid):null;lDr=[];if(cLS){pLE();}else{document.getElementById('lES').innerHTML='';}rLDr();}
 function pLE(){if(!cLS)return;document.getElementById('lES').innerHTML=cLS.exercises.map((e,i)=>`<option value="${i}">${e.name}</option>`).join('');lEC();}
 function lEC(){if(!cLS)return;const ex=cLS.exercises[parseInt(document.getElementById('lES').value)];if(!ex)return;const n=parseInt(ex.sets)||3;lSt=[];for(let i=0;i<n;i++)lSt.push({weight:'',reps:''});rLS();}
@@ -2549,14 +2591,160 @@ function confirmEditFav(){
 function rPl(){if(!obj){document.getElementById('plH').innerHTML='<div style="font-size:13px;color:var(--dim)">Aucun objectif.</div>';document.getElementById('plWk').innerHTML='';return;}
 document.getElementById('plT').textContent={cut:'🔥 Sèche',recomp:'⚡ Recomposition',bulk:'💪 Prise de masse',maintain:'⚖️ Maintien'}[obj.goal]||'Objectif';
 if(obj.targetDate){const dl=Math.max(0,Math.ceil((new Date(obj.targetDate)-new Date())/864e5)),tot=Math.ceil((new Date(obj.targetDate)-new Date(obj.startDate))/864e5),el=tot-dl,pc=tot>0?Math.round(el/tot*100):0;document.getElementById('plD').textContent=dl;document.getElementById('plS').textContent='jours → '+new Date(obj.targetDate).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});document.getElementById('plBf').style.width=pc+'%';document.getElementById('plPc').textContent=pc+'% accompli';}else{document.getElementById('plD').textContent=Math.ceil((new Date()-new Date(obj.startDate))/864e5);document.getElementById('plS').textContent='jours d\'entraînement';document.getElementById('plBf').style.width='0%';document.getElementById('plPc').textContent='Programme continu';}
+// Weight goal progress
+let wgHtml='';
+if(P&&P.targetWeight&&wE.length){
+  const curW=wE[wE.length-1].weight;
+  const startW=P.weight||wE[0].weight;
+  const tgtW=P.targetWeight;
+  const totalDiff=Math.abs(startW-tgtW);
+  const curDiff=Math.abs(curW-tgtW);
+  const done=totalDiff>0?Math.max(0,Math.min(100,Math.round((1-curDiff/totalDiff)*100))):0;
+  const isLoss=obj.goal==='cut';
+  const remaining=isLoss?(curW-tgtW):(tgtW-curW);
+  const color=isLoss?'var(--red)':'var(--blue)';
+  wgHtml=`<div style="margin:10px 20px 0;padding:14px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r)">
+  <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px">🎯 Objectif poids</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div style="text-align:center"><div style="font-size:10px;color:var(--dim)">Départ</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px">${startW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
+    <div style="flex:1;padding:0 12px"><div style="height:6px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:${color};width:${done}%"></div></div></div>
+    <div style="text-align:center"><div style="font-size:10px;color:var(--dim)">Cible</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${color}">${tgtW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)">
+    <span>Actuel : <b style="color:var(--tx)">${curW} kg</b></span>
+    <span>${remaining>0?(isLoss?'Encore ':'Encore +')+remaining.toFixed(1)+' kg':'✅ Objectif atteint !'}</span>
+  </div></div>`;
+}
 const cw=Math.max(1,Math.ceil((new Date()-new Date(obj.startDate))/(7*864e5)));
-document.getElementById('plWk').innerHTML=wPl.map(w=>`<div class="wcd ${w.w===cw?'wccur':''}"><div class="wch"><div class="wcn">SEMAINE ${w.w}${w.w===cw?' ←':''}</div><div class="wcb" style="background:${w.phase.includes('éficit')||w.phase.includes('èche')?'rgba(255,77,90,.15);color:var(--red)':'rgba(91,168,255,.15);color:var(--blue)'}">${w.phase}</div></div><div class="wcbd"><span style="font-weight:700;color:var(--ac)">${w.kcal}</span> entraînement · <span style="color:var(--dim)">${w.kcalR}</span> repos · ${w.sess} séances${w.deload?' · <span style="color:var(--orange)">Deload</span>':''}<div class="wcnt">${w.note}</div></div></div>`).join('');}
-function openObj(){if(P){document.getElementById('obG').value=P.goal;document.getElementById('obFr').value=P.sportFreq||4;document.getElementById('obTp').value=P.sportType||'hyper';}document.getElementById('obDt').value='';document.getElementById('obMd').classList.remove('hid');}
+document.getElementById('plWk').innerHTML=wgHtml+wPl.map(w=>`<div class="wcd ${w.w===cw?'wccur':''}"><div class="wch"><div class="wcn">SEMAINE ${w.w}${w.w===cw?' ←':''}</div><div class="wcb" style="background:${w.phase.includes('éficit')||w.phase.includes('èche')||w.phase.includes('ctif')?'rgba(255,77,90,.15);color:var(--red)':'rgba(91,168,255,.15);color:var(--blue)'}">${w.phase}</div></div><div class="wcbd"><span style="font-weight:700;color:var(--ac)">${w.kcal}</span> entraînement · <span style="color:var(--dim)">${w.kcalR}</span> repos · ${w.sess} séances${w.deload?' · <span style="color:var(--orange)">Deload</span>':''}<div class="wcnt">${w.note}</div></div></div>`).join('');}
+function openObj(){
+if(P){
+  document.getElementById('obG').value=P.goal;
+  document.getElementById('obFr').value=P.sportFreq||4;
+  document.getElementById('obTp').value=P.sportType||'hyper';
+  document.getElementById('obCurW').value=P.weight||'';
+  document.getElementById('obBulkCurW').value=P.weight||'';
+}
+document.getElementById('obDt').value='';
+document.getElementById('obTgtW').value='';
+document.getElementById('obBulkTgtW').value='';
+document.getElementById('obWgCalc').innerHTML='';
+document.getElementById('obBulkCalc').innerHTML='';
+// Check if user has existing sessions/logs to warn about
+const hasLogs=wL.length>0;
+const hasCalEntries=Object.keys(cal).length>0;
+const hasCustomSes=ses.some(s=>!s.gen);
+const warn=document.getElementById('obSesWarn');
+if(hasLogs||hasCalEntries||hasCustomSes){
+  warn.style.display='block';
+  let msg='Tu as ';
+  const parts=[];
+  if(wL.length)parts.push(wL.length+' séance'+(wL.length>1?'s':'')+' loggée'+(wL.length>1?'s':''));
+  if(hasCalEntries)parts.push(Object.keys(cal).length+' jour'+(Object.keys(cal).length>1?'s':'')+' planifié'+(Object.keys(cal).length>1?'s':''));
+  if(hasCustomSes)parts.push('des séances personnalisées');
+  msg+=parts.join(', ')+'. Tu peux garder tes séances actuelles ou les remplacer par un nouveau programme généré.';
+  document.getElementById('obSesWarnMsg').textContent=msg;
+}else{warn.style.display='none';}
+obGoalChanged();
+document.getElementById('obMd').classList.remove('hid');
+}
+function obGoalChanged(){
+const g=document.getElementById('obG').value;
+document.getElementById('obWeightGoalBox').style.display=g==='cut'?'block':'none';
+document.getElementById('obBulkGoalBox').style.display=g==='bulk'?'block':'none';
+if(g==='cut')calcWeightGoal();
+if(g==='bulk')calcBulkGoal();
+}
+function calcWeightGoal(){
+const curW=parseFloat(document.getElementById('obCurW').value);
+const tgtW=parseFloat(document.getElementById('obTgtW').value);
+const tgtDate=document.getElementById('obDt').value;
+const box=document.getElementById('obWgCalc');
+if(!curW||!tgtW){box.innerHTML='';return;}
+if(tgtW>=curW){box.innerHTML='<div style="font-size:11px;color:var(--orange)">⚠️ Le poids cible doit être inférieur au poids actuel pour une sèche.</div>';return;}
+const toLose=curW-tgtW;
+const kcalToLose=Math.round(toLose*7700);
+if(!tgtDate){
+  // Suggest a realistic timeline
+  const minWeeks=Math.ceil(toLose/(curW*0.01));
+  const maxWeeks=Math.ceil(toLose/(curW*0.005));
+  const suggestedDate=new Date();suggestedDate.setDate(suggestedDate.getDate()+minWeeks*7);
+  box.innerHTML=`<div style="font-size:11px;color:var(--dim);line-height:1.6">
+  <b>${toLose.toFixed(1)} kg</b> à perdre = <b>${kcalToLose.toLocaleString()}</b> kcal de déficit total.<br>
+  📅 Choisis une date cible. Durée recommandée : <b>${minWeeks}-${maxWeeks} semaines</b>.<br>
+  <span style="font-size:10px;color:var(--fnt)">Recommandation : 0.5-1% du poids corporel / semaine max.</span></div>`;
+  return;
+}
+const days=Math.max(1,Math.ceil((new Date(tgtDate)-new Date())/864e5));
+const weeks=days/7;
+const lossPerWeek=toLose/weeks;
+const lossPct=lossPerWeek/curW*100;
+const dailyDeficit=Math.round(kcalToLose/days);
+let status,color,icon;
+if(lossPct<=0.5){status='Objectif très réaliste 👍';color='var(--green)';icon='✅';}
+else if(lossPct<=0.75){status='Objectif réaliste';color='var(--green)';icon='✅';}
+else if(lossPct<=1.0){status='Objectif ambitieux mais faisable';color='var(--orange)';icon='⚡';}
+else if(lossPct<=1.5){status='Objectif agressif — risque de perte musculaire';color='var(--orange)';icon='⚠️';}
+else{status='Trop rapide ! Risque de perte musculaire et d\'effet yoyo';color='var(--red)';icon='🚫';
+  const safeWeeks=Math.ceil(toLose/(curW*0.0075));
+  const safeDate=new Date();safeDate.setDate(safeDate.getDate()+safeWeeks*7);
+  status+='. Durée recommandée : '+safeWeeks+' semaines minimum (→ '+safeDate.toLocaleDateString('fr-FR',{day:'numeric',month:'long'})+')';
+}
+box.innerHTML=`<div style="font-size:11px;line-height:1.6">
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span>${icon}</span><span style="font-weight:700;color:${color}">${status}</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--red)">${toLose.toFixed(1)}<span style="font-size:12px">kg</span></div><div style="font-size:9px;color:var(--dim)">à perdre</div></div>
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--orange)">${Math.round(weeks)}<span style="font-size:12px">sem</span></div><div style="font-size:9px;color:var(--dim)">${lossPerWeek.toFixed(2)} kg/sem</div></div>
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--ac)">-${dailyDeficit}</div><div style="font-size:9px;color:var(--dim)">kcal/jour déficit</div></div>
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--blue)">${lossPct.toFixed(1)}<span style="font-size:12px">%</span></div><div style="font-size:9px;color:var(--dim)">poids/sem</div></div>
+</div>
+</div>`;
+}
+function calcBulkGoal(){
+const curW=parseFloat(document.getElementById('obBulkCurW').value);
+const tgtW=parseFloat(document.getElementById('obBulkTgtW').value);
+const tgtDate=document.getElementById('obDt').value;
+const box=document.getElementById('obBulkCalc');
+if(!curW||!tgtW){box.innerHTML='';return;}
+if(tgtW<=curW){box.innerHTML='<div style="font-size:11px;color:var(--orange)">⚠️ Le poids cible doit être supérieur pour une prise de masse.</div>';return;}
+const toGain=tgtW-curW;
+if(!tgtDate){
+  const minWeeks=Math.ceil(toGain/0.5);
+  box.innerHTML=`<div style="font-size:11px;color:var(--dim);line-height:1.6"><b>${toGain.toFixed(1)} kg</b> à prendre. Durée recommandée : <b>${minWeeks}+ semaines</b> (max ~0.25-0.5 kg/sem pour limiter la prise de gras).<br>📅 Choisis une date cible.</div>`;
+  return;
+}
+const days=Math.max(1,Math.ceil((new Date(tgtDate)-new Date())/864e5));
+const weeks=days/7;
+const gainPerWeek=toGain/weeks;
+const dailySurplus=Math.round(toGain*7700/days);
+let status,color,icon;
+if(gainPerWeek<=0.25){status='Lean bulk optimal';color='var(--green)';icon='✅';}
+else if(gainPerWeek<=0.5){status='Prise de masse propre';color='var(--green)';icon='👍';}
+else if(gainPerWeek<=0.75){status='Surplus élevé — plus de gras';color='var(--orange)';icon='⚠️';}
+else{status='Trop rapide — beaucoup de gras en surplus';color='var(--red)';icon='🚫';}
+box.innerHTML=`<div style="font-size:11px;line-height:1.6"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span>${icon}</span><span style="font-weight:700;color:${color}">${status}</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--blue)">+${toGain.toFixed(1)}<span style="font-size:12px">kg</span></div><div style="font-size:9px;color:var(--dim)">à prendre</div></div>
+<div style="padding:8px;background:var(--s2);border-radius:var(--rs);text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--ac)">+${dailySurplus}</div><div style="font-size:9px;color:var(--dim)">kcal/jour surplus</div></div>
+</div></div>`;
+}
 function svObj(){
 const g=document.getElementById('obG').value;
 const tgt=document.getElementById('obDt').value;
 const fr=parseInt(document.getElementById('obFr').value)||4;
 const ty=document.getElementById('obTp').value||'hyper';
+const sesMode=document.querySelector('input[name="obSesMode"]:checked');
+const keepSessions=sesMode?sesMode.value==='keep':false;
+
+// Update weight from goal inputs if available
+if(g==='cut'){
+  const cw=parseFloat(document.getElementById('obCurW').value);
+  if(cw>0)P.weight=cw;
+}else if(g==='bulk'){
+  const cw=parseFloat(document.getElementById('obBulkCurW').value);
+  if(cw>0)P.weight=cw;
+}
+
 P.goal=g;P.sportFreq=fr;P.sportType=ty;
 const r=cBMR(P.weight,P.height,P.age,P.sex,P.bf||0);
 const neat=Math.round(r.bmr*(P.workMult||1.2));
@@ -2564,16 +2752,127 @@ const cps={hyper:350,strength:400,mix:375}[ty]||350;
 const dex=Math.round(fr*cps/7);
 const tdee=neat+dex;
 P.tdee=tdee;P.bmr=r.bmr;
-const adjMap={cut:-400,recomp:0,maintain:0,bulk:300};
-P.kcal=Math.round((tdee+(adjMap[g]||0))/50)*50;
+
+// Calculate specific deficit/surplus from weight goal if provided
+let customAdj=null;
+if(g==='cut'&&tgt){
+  const tgtW=parseFloat(document.getElementById('obTgtW').value);
+  const curW=parseFloat(document.getElementById('obCurW').value);
+  if(tgtW>0&&curW>0&&tgtW<curW){
+    const days=Math.max(1,Math.ceil((new Date(tgt)-new Date())/864e5));
+    const toLose=curW-tgtW;
+    customAdj=-Math.min(Math.round(toLose*7700/days),Math.round(tdee*0.35));// Cap at 35% TDEE
+  }
+}else if(g==='bulk'&&tgt){
+  const tgtW=parseFloat(document.getElementById('obBulkTgtW').value);
+  const curW=parseFloat(document.getElementById('obBulkCurW').value);
+  if(tgtW>0&&curW>0&&tgtW>curW){
+    const days=Math.max(1,Math.ceil((new Date(tgt)-new Date())/864e5));
+    const toGain=tgtW-curW;
+    customAdj=Math.min(Math.round(toGain*7700/days),600);// Cap at +600
+  }
+}
+
+if(customAdj!==null){
+  P.kcal=Math.round((tdee+customAdj)/50)*50;
+}else{
+  const adjMap={cut:-400,recomp:0,maintain:0,bulk:300};
+  P.kcal=Math.round((tdee+(adjMap[g]||0))/50)*50;
+}
+
+// Store weight goal info
+if(g==='cut'){
+  const tw=parseFloat(document.getElementById('obTgtW').value);
+  if(tw>0)P.targetWeight=tw;else delete P.targetWeight;
+}else if(g==='bulk'){
+  const tw=parseFloat(document.getElementById('obBulkTgtW').value);
+  if(tw>0)P.targetWeight=tw;else delete P.targetWeight;
+}else{delete P.targetWeight;}
+
 L.s('P',P);
-ses=genS(fr,ty);L.s('ses',ses);
+
+// Session management: preserve or replace
+if(keepSessions){
+  // Keep all current sessions — just generate new ones and merge
+  const newSes=genS(fr,ty);
+  // Add new generated sessions that don't duplicate existing names
+  const existingNames=new Set(ses.map(s=>s.name));
+  // Remove old generated sessions (will be replaced by new ones)
+  const oldCustom=ses.filter(s=>!s.gen);
+  const oldGenUsed=ses.filter(s=>s.gen&&(wL.some(l=>l.sId===s.id)||Object.values(cal).flat().includes(s.id)));
+  // Mark old generated sessions as archived
+  oldGenUsed.forEach(s=>s.archived=true);
+  ses=[...oldCustom,...oldGenUsed,...newSes];
+  // Clean duplicates by id
+  const seen=new Set();ses=ses.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
+  L.s('ses',ses);
+  // Calendar: keep all past entries, only update future with new sessions
+  // Don't touch cal — user keeps their history
+}else{
+  // Archive old sessions referenced in logs so history still works
+  const referencedIds=new Set();
+  wL.forEach(l=>{if(l.sId)referencedIds.add(l.sId);});
+  Object.values(cal).forEach(v=>{const arr=Array.isArray(v)?v:[v];arr.forEach(id=>referencedIds.add(id));});
+  const archived=ses.filter(s=>referencedIds.has(s.id));
+  archived.forEach(s=>s.archived=true);
+  const newSes=genS(fr,ty);
+  ses=[...archived,...newSes];
+  // Clean duplicates
+  const seen=new Set();ses=ses.filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;});
+  L.s('ses',ses);
+  // Keep past calendar entries, clear future ones
+  const today=td();
+  Object.keys(cal).forEach(k=>{if(k>today)delete cal[k];});
+  L.s('cal',cal);
+}
+
 const wks=tgt?Math.max(1,Math.ceil((new Date(tgt)-new Date())/(7*864e5))):12;
 obj={goal:g,targetDate:tgt||null,startDate:td(),weeks:wks,freq:fr,type:ty};
-wPl=genWP(g,tdee,fr,wks);
+if(customAdj!==null){
+  wPl=genWPCustom(g,tdee,customAdj,fr,wks);
+}else{
+  wPl=genWP(g,tdee,fr,wks);
+}
 L.s('obj',obj);L.s('wPl',wPl);
 document.getElementById('obMd').classList.add('hid');
-rPl();rH();
+rPl();rH();rSe();rCa();
+toast('Nouvel objectif : '+{cut:'Sèche',recomp:'Recomposition',bulk:'Prise de masse',maintain:'Maintien'}[g]+' !','success',3000);
+}
+
+function genWPCustom(goal,tdee,dailyAdj,freq,weeks){
+const plan=[];
+for(let w=1;w<=weeks;w++){
+  const p=w/weeks;
+  let kcal,phase,note;
+  if(goal==='cut'){
+    if(p<=0.15){
+      phase='Adaptation';kcal=tdee+Math.round(dailyAdj*0.5);
+      note='Début progressif. Installer le déficit en douceur.';
+    }else if(p<=0.85){
+      phase='Déficit actif';kcal=tdee+dailyAdj;
+      note='Déficit calibré sur ton objectif poids. Garde l\'intensité !';
+    }else{
+      phase='Sèche finale';kcal=tdee+Math.round(dailyAdj*0.8);
+      note='On relâche légèrement le déficit pour finir proprement.';
+    }
+  }else if(goal==='bulk'){
+    if(p<=0.15){
+      phase='Adaptation';kcal=tdee+Math.round(dailyAdj*0.5);
+      note='Augmentation progressive du surplus.';
+    }else if(p<=0.85){
+      phase='Surplus actif';kcal=tdee+dailyAdj;
+      note='Surplus calibré. Progresser en charges chaque semaine.';
+    }else{
+      phase='Consolidation';kcal=tdee+Math.round(dailyAdj*0.6);
+      note='On réduit le surplus pour consolider.';
+    }
+  }else{
+    phase='Maintien';kcal=tdee;note='Stabilité.';
+  }
+  kcal=Math.round(kcal/50)*50;
+  plan.push({w,phase,kcal,kcalR:Math.round((kcal-150)/50)*50,note,deload:w%4===0,sess:freq});
+}
+return plan;
 }
 
 function svW(){const w=parseFloat(document.getElementById('iW').value);if(isNaN(w))return toast('Poids requis','warn');wE.push({id:Date.now(),date:td(),dd:new Date().toLocaleDateString('fr-FR'),weight:w,waist:parseFloat(document.getElementById('iWa').value)||null});L.s('wE',wE);if(P){P.weight=w;L.s('P',P);}document.getElementById('iW').value='';document.getElementById('iWa').value='';rWe();}
