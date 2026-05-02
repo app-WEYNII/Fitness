@@ -716,7 +716,7 @@ P={name:document.getElementById('oN').value.trim()||'Athlète',weight:r.w,height
 // First weight entry as reference
 if(!wE.length){wE.push({id:Date.now(),date:td(),dd:new Date().toLocaleDateString('fr-FR'),weight:r.w,waist:null});L.s('wE',wE);}
 ses=genS(fr,ty);L.s('ses',ses);cal={};L.s('cal',cal);
-if(tgt){const wks=Math.max(1,Math.ceil((new Date(tgt)-new Date())/(7*86400000)));obj={goal:oG,targetDate:tgt,startDate:td(),weeks:wks,freq:fr,type:ty};wPl=genWP(oG,r.tdee,fr,wks);}else{obj={goal:oG,targetDate:null,startDate:td(),weeks:52,freq:fr,type:ty};wPl=genWP(oG,r.tdee,fr,12);}L.s('obj',obj);L.s('wPl',wPl);
+if(tgt){const wks=Math.max(1,Math.ceil((new Date(tgt)-new Date())/(7*86400000)));obj={goal:oG,targetDate:tgt,startDate:td(),startWeight:r.w,weeks:wks,freq:fr,type:ty};wPl=genWP(oG,r.tdee,fr,wks);}else{obj={goal:oG,targetDate:null,startDate:td(),startWeight:r.w,weeks:52,freq:fr,type:ty};wPl=genWP(oG,r.tdee,fr,12);}L.s('obj',obj);L.s('wPl',wPl);
 document.getElementById('onb').classList.add('hid');initApp();}
 
 function aFC(){/* no auto-fill — user fills manually */}
@@ -2595,28 +2595,78 @@ if(obj.targetDate){const dl=Math.max(0,Math.ceil((new Date(obj.targetDate)-new D
 let wgHtml='';
 if(P&&P.targetWeight&&wE.length){
   const curW=wE[wE.length-1].weight;
-  const startW=P.weight||wE[0].weight;
+  const startW=gSW()||wE[0].weight;
   const tgtW=P.targetWeight;
-  const totalDiff=Math.abs(startW-tgtW);
-  const curDiff=Math.abs(curW-tgtW);
-  const done=totalDiff>0?Math.max(0,Math.min(100,Math.round((1-curDiff/totalDiff)*100))):0;
-  const isLoss=obj.goal==='cut';
+  const totalDiff=Math.abs(startW-tgtW)||1;
+  const isLoss=startW>tgtW;
+  // Progression directionnelle (cap 0-100), ne triche pas si poids dans le mauvais sens
+  const movement=isLoss?(startW-curW):(curW-startW);
+  const done=Math.max(0,Math.min(100,Math.round(movement/totalDiff*100)));
   const remaining=isLoss?(curW-tgtW):(tgtW-curW);
+  const reached=remaining<=0;
   const color=isLoss?'var(--red)':'var(--blue)';
-  wgHtml=`<div style="margin:10px 20px 0;padding:14px;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r)">
-  <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px">🎯 Objectif poids</div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <div style="text-align:center"><div style="font-size:10px;color:var(--dim)">Départ</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px">${startW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
-    <div style="flex:1;padding:0 12px"><div style="height:6px;background:var(--s3);border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:${color};width:${done}%"></div></div></div>
-    <div style="text-align:center"><div style="font-size:10px;color:var(--dim)">Cible</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${color}">${tgtW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
-  </div>
-  <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)">
-    <span>Actuel : <b style="color:var(--tx)">${curW} kg</b></span>
-    <span>${remaining>0?(isLoss?'Encore ':'Encore +')+remaining.toFixed(1)+' kg':'✅ Objectif atteint !'}</span>
-  </div></div>`;
+  const gradBg=isLoss?'linear-gradient(135deg,rgba(255,77,90,.10),rgba(255,77,90,.03))':'linear-gradient(135deg,rgba(91,168,255,.10),rgba(91,168,255,.03))';
+  const gradBd=isLoss?'rgba(255,77,90,.25)':'rgba(91,168,255,.25)';
+  // Calcul vélocité réelle (kg/sem) sur les 30 derniers jours
+  let velocity=null,velocityLabel='—';
+  if(wE.length>=2){
+    const recent=wE.filter(e=>{const d=new Date(e.date);const ago=(Date.now()-d.getTime())/864e5;return ago<=30;});
+    if(recent.length>=2){
+      const first=recent[0],last=recent[recent.length-1];
+      const days=Math.max(1,(new Date(last.date)-new Date(first.date))/864e5);
+      velocity=(last.weight-first.weight)/days*7;
+      velocityLabel=(velocity>=0?'+':'')+velocity.toFixed(2)+' kg/sem';
+    }
+  }
+  // Vélocité cible si une date est définie
+  let reqVelocity=null,reqLabel='—';
+  if(obj.targetDate){
+    const daysLeft=Math.max(1,Math.ceil((new Date(obj.targetDate)-new Date())/864e5));
+    const remToGo=isLoss?(curW-tgtW):(tgtW-curW);
+    if(remToGo>0){reqVelocity=remToGo/daysLeft*7*(isLoss?-1:1);reqLabel=(reqVelocity>=0?'+':'')+reqVelocity.toFixed(2)+' kg/sem';}
+    else reqLabel='Atteint ✅';
+  }
+  // Statut on-track
+  let statusLabel,statusColor;
+  if(reached){statusLabel='✅ OBJECTIF ATTEINT';statusColor='var(--green)';}
+  else if(velocity===null){statusLabel='📊 EN COURS';statusColor='var(--dim)';}
+  else if(reqVelocity!==null){
+    const ratio=isLoss?velocity/reqVelocity:velocity/reqVelocity;
+    if(velocity===0||(isLoss&&velocity>0)||(!isLoss&&velocity<0)){statusLabel='⚠️ MAUVAIS SENS';statusColor='var(--red)';}
+    else if(ratio>=0.9){statusLabel='🔥 DANS LES TEMPS';statusColor='var(--green)';}
+    else if(ratio>=0.5){statusLabel='👌 PROGRESSION OK';statusColor='var(--orange)';}
+    else{statusLabel='🐢 RYTHME LENT';statusColor='var(--orange)';}
+  }else{
+    if((isLoss&&velocity<0)||(!isLoss&&velocity>0)){statusLabel='✅ DANS LE BON SENS';statusColor='var(--green)';}
+    else if(velocity===0){statusLabel='⚖️ STABLE';statusColor='var(--dim)';}
+    else{statusLabel='⚠️ MAUVAIS SENS';statusColor='var(--red)';}
+  }
+  wgHtml=`<div style="margin:10px 20px 12px;padding:18px;background:${gradBg};border:1px solid ${gradBd};border-radius:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--dim)">🎯 OBJECTIF POIDS</div>
+      <div style="font-size:9px;font-weight:800;letter-spacing:1px;color:${statusColor}">${statusLabel}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="text-align:center"><div style="font-size:9px;color:var(--dim);letter-spacing:1px">DÉPART</div><div style="font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1.1">${startW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
+      <div style="font-size:18px;color:var(--dim)">→</div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--dim);letter-spacing:1px">CIBLE</div><div style="font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1.1;color:${color}">${tgtW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
+    </div>
+    <div style="position:relative;margin-bottom:14px">
+      <div style="height:10px;background:var(--s3);border-radius:5px;overflow:hidden"><div style="height:100%;background:${color};border-radius:5px;width:${done}%;transition:width .6s"></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px">
+      <div><div style="font-size:9px;color:var(--dim);letter-spacing:1px">ACTUEL</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--ac);line-height:1.1">${curW}<span style="font-size:11px;color:var(--dim)">kg</span></div></div>
+      <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1.1">${done}<span style="font-size:13px;color:var(--dim)">%</span></div><div style="font-size:10px;color:var(--dim)">${reached?'✅ Atteint !':(isLoss?'Encore ':'Encore +')+Math.abs(remaining).toFixed(1)+' kg'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:14px;border-top:1px solid var(--bd)">
+      <div style="text-align:center"><div style="font-size:9px;color:var(--dim);letter-spacing:1px">RYTHME ACTUEL</div><div style="font-size:13px;font-weight:700;margin-top:2px;color:${velocity===null?'var(--dim)':((isLoss&&velocity<0)||(!isLoss&&velocity>0)?'var(--green)':velocity===0?'var(--dim)':'var(--red)')}">${velocityLabel}</div><div style="font-size:9px;color:var(--fnt)">30 derniers jours</div></div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--dim);letter-spacing:1px">RYTHME REQUIS</div><div style="font-size:13px;font-weight:700;margin-top:2px;color:${reqLabel==='Atteint ✅'?'var(--green)':reqLabel==='—'?'var(--dim)':color}">${reqLabel}</div><div style="font-size:9px;color:var(--fnt)">${obj.targetDate?'jusqu\'à la date cible':'pas de deadline'}</div></div>
+    </div>
+  </div>`;
 }
 const cw=Math.max(1,Math.ceil((new Date()-new Date(obj.startDate))/(7*864e5)));
-document.getElementById('plWk').innerHTML=wgHtml+wPl.map(w=>`<div class="wcd ${w.w===cw?'wccur':''}"><div class="wch"><div class="wcn">SEMAINE ${w.w}${w.w===cw?' ←':''}</div><div class="wcb" style="background:${w.phase.includes('éficit')||w.phase.includes('èche')||w.phase.includes('ctif')?'rgba(255,77,90,.15);color:var(--red)':'rgba(91,168,255,.15);color:var(--blue)'}">${w.phase}</div></div><div class="wcbd"><span style="font-weight:700;color:var(--ac)">${w.kcal}</span> entraînement · <span style="color:var(--dim)">${w.kcalR}</span> repos · ${w.sess} séances${w.deload?' · <span style="color:var(--orange)">Deload</span>':''}<div class="wcnt">${w.note}</div></div></div>`).join('');}
+// Filtrer les semaines : afficher celles passées de manière compacte + actuelle/futures détaillées
+document.getElementById('plWk').innerHTML=wgHtml+`<div style="margin:0 20px 10px"><div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between;align-items:center"><span>📅 Programme · ${wPl.length} sem</span><span style="color:var(--ac)">Sem ${Math.min(cw,wPl.length)}/${wPl.length}</span></div></div>`+wPl.map(w=>{const isPast=w.w<cw,isCur=w.w===cw;const opacity=isPast?'opacity:.55;':'';return`<div class="wcd ${isCur?'wccur':''}" style="${opacity}"><div class="wch"><div class="wcn">${isPast?'✓ ':''}SEMAINE ${w.w}${isCur?' ←':''}</div><div class="wcb" style="background:${w.phase.includes('éficit')||w.phase.includes('èche')||w.phase.includes('ctif')?'rgba(255,77,90,.15);color:var(--red)':'rgba(91,168,255,.15);color:var(--blue)'}">${w.phase}</div></div><div class="wcbd"><span style="font-weight:700;color:var(--ac)">${w.kcal}</span> entraînement · <span style="color:var(--dim)">${w.kcalR}</span> repos · ${w.sess} séances${w.deload?' · <span style="color:var(--orange)">Deload</span>':''}<div class="wcnt">${w.note}</div></div></div>`;}).join('');}
 function openObj(){
 if(P){
   document.getElementById('obG').value=P.goal;
@@ -2827,7 +2877,7 @@ if(keepSessions){
 }
 
 const wks=tgt?Math.max(1,Math.ceil((new Date(tgt)-new Date())/(7*864e5))):12;
-obj={goal:g,targetDate:tgt||null,startDate:td(),weeks:wks,freq:fr,type:ty};
+obj={goal:g,targetDate:tgt||null,startDate:td(),startWeight:P.weight,weeks:wks,freq:fr,type:ty};
 if(customAdj!==null){
   wPl=genWPCustom(g,tdee,customAdj,fr,wks);
 }else{
@@ -2876,6 +2926,24 @@ return plan;
 }
 
 function svW(){const w=parseFloat(document.getElementById('iW').value);if(isNaN(w))return toast('Poids requis','warn');wE.push({id:Date.now(),date:td(),dd:new Date().toLocaleDateString('fr-FR'),weight:w,waist:parseFloat(document.getElementById('iWa').value)||null});L.s('wE',wE);if(P){P.weight=w;L.s('P',P);}document.getElementById('iW').value='';document.getElementById('iWa').value='';rWe();}
+// Récupère le poids de départ de l'objectif courant.
+// Backfill auto si manquant (anciennes données) : prend la 1ère pesée >= startDate.
+function gSW(){
+  if(!obj)return wE.length?wE[0].weight:(P?P.weight:null);
+  if(typeof obj.startWeight==='number'&&obj.startWeight>0)return obj.startWeight;
+  // Backfill : trouver la 1ère pesée à partir de la date de début du programme
+  let sw=null;
+  if(obj.startDate&&wE.length){
+    const e=wE.find(x=>(x.date||'')>=obj.startDate);
+    sw=e?e.weight:wE[0].weight;
+  }else if(wE.length){
+    sw=wE[0].weight;
+  }else if(P&&P.weight){
+    sw=P.weight;
+  }
+  if(sw){obj.startWeight=sw;L.s('obj',obj);}
+  return sw;
+}
 function rWe(){const h=document.getElementById('wHi');if(!wE.length){document.getElementById('chE').style.display='block';document.getElementById('wCh').style.display='none';h.innerHTML='';return;}document.getElementById('chE').style.display='none';document.getElementById('wCh').style.display='block';drCh();
 // Group by month
 const byMonth={};[...wE].reverse().forEach(e=>{const m=e.date?e.date.slice(0,7):'?';if(!byMonth[m])byMonth[m]=[];byMonth[m].push(e);});
@@ -2899,20 +2967,23 @@ function rWGoal(){
 const card=document.getElementById('weightGoalCard');
 if(!P||!obj||!wE.length){card.style.display='none';return;}
 card.style.display='block';
-const startW=P.weight;const curW=wE[wE.length-1].weight;
+// Utilise gSW() (poids de départ persisté de l'objectif), PAS P.weight (qui change à chaque pesée)
+const startW=gSW()||P.weight;const curW=wE[wE.length-1].weight;
 const g=obj.goal;
-// Estimate target weight based on goal and duration
+// Cible : utilise P.targetWeight si défini (raccord avec onglet Plan), sinon estimation
 let targetW,weeklyRate,emoji,color,label;
-if(g==='cut'){targetW=Math.round((startW*.92)*10)/10;weeklyRate=-.4;emoji='🔥';color='var(--red)';label='Poids cible sèche';}
-else if(g==='bulk'){targetW=Math.round((startW*1.05)*10)/10;weeklyRate=.25;emoji='💪';color='var(--blue)';label='Poids cible masse';}
-else if(g==='recomp'){targetW=Math.round((startW*.97)*10)/10;weeklyRate=-.15;emoji='⚡';color='var(--ac)';label='Poids cible recomp';}
-else{targetW=startW;weeklyRate=0;emoji='⚖️';color='var(--dim)';label='Poids maintien';}
+if(g==='cut'){targetW=P.targetWeight||Math.round((startW*.92)*10)/10;weeklyRate=-.4;emoji='🔥';color='var(--red)';label='Poids cible sèche';}
+else if(g==='bulk'){targetW=P.targetWeight||Math.round((startW*1.05)*10)/10;weeklyRate=.25;emoji='💪';color='var(--blue)';label='Poids cible masse';}
+else if(g==='recomp'){targetW=P.targetWeight||Math.round((startW*.97)*10)/10;weeklyRate=-.15;emoji='⚡';color='var(--ac)';label='Poids cible recomp';}
+else{targetW=P.targetWeight||startW;weeklyRate=0;emoji='⚖️';color='var(--dim)';label='Poids maintien';}
 const totalDelta=Math.abs(targetW-startW)||1;
-const curDelta=Math.abs(curW-startW);
-const pct=Math.min(100,Math.round(curDelta/totalDelta*100));
+const isLoss=startW>targetW;
+// Progression directionnelle : 0% si pas avancé, 100% si atteint, capé
+const movement=isLoss?(startW-curW):(curW-startW);
+const pct=Math.max(0,Math.min(100,Math.round(movement/totalDelta*100)));
 const remaining=(targetW-curW).toFixed(1);
-const onTrack=(g==='cut'&&curW<=startW)||(g==='bulk'&&curW>=startW)||(g==='recomp'&&curW<=startW);
-const statusEmoji=onTrack?'✅':'⚠️';
+const onTrack=isLoss?curW<=startW:curW>=startW;
+const statusEmoji=pct>=100?'✅':onTrack?'📈':'⚠️';
 const r=44,circ=2*Math.PI*r,off=circ*(1-pct/100);
 card.innerHTML=`<div style="display:flex;align-items:center;gap:16px">
 <div style="position:relative;width:100px;height:100px;flex-shrink:0">
@@ -2924,7 +2995,7 @@ card.innerHTML=`<div style="display:flex;align-items:center;gap:16px">
 <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px">Départ</span><span style="font-weight:700">${startW} kg</span></div>
 <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px">Actuel</span><span style="font-weight:700;font-size:16px;color:${color}">${curW} kg</span></div>
 <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px">Objectif</span><span style="font-weight:700">${targetW} kg</span></div>
-<div style="font-size:11px;color:var(--dim);margin-top:4px">${statusEmoji} ${remaining>0?'+':''}${remaining} kg restants · ~${Math.abs(weeklyRate)} kg/sem</div>
+<div style="font-size:11px;color:var(--dim);margin-top:4px">${statusEmoji} ${pct>=100?'Objectif atteint !':(remaining>0?'+':'')+remaining+' kg restants'}</div>
 </div></div>`;
 }
 function drCh(){const c=document.getElementById('wCh'),ctx=c.getContext('2d'),dp=devicePixelRatio||1,r=c.getBoundingClientRect();c.width=r.width*dp;c.height=r.height*dp;ctx.scale(dp,dp);const W=r.width,H=r.height;ctx.clearRect(0,0,W,H);if(wE.length<2)return;
